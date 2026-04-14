@@ -241,7 +241,7 @@ Résume ce qui est prêt et ce qui bloque.`,
         '`claude --continue` reprend la dernière session',
         '`claude --resume <id>` pour une session spécifique',
         '`claude -p "..."` pour le mode non-interactif / scripts',
-        'Les sous-agents permettent des tâches parallèles',
+        'Tu peux demander à Claude de lancer plusieurs tâches en même temps : "Optimise les requêtes SQL ET améliore les messages d\'erreur en parallèle"',
       ],
       codeExample: `# Reprendre une session
 claude --continue

@@ -68,15 +68,20 @@ cat error.log | claude -p "Analyse ces erreurs et propose des corrections"
 claude -p "Vérifie que le code respecte nos conventions" --output-format json
 ```
 
-### Sessions parallèles avec sous-agents
+### Faire plusieurs choses en même temps
 
-Claude peut lancer des sous-agents pour des tâches parallèles :
+Par défaut Claude travaille une tâche à la fois. Mais tu peux lui demander
+d'en faire plusieurs simultanément — il va alors lancer des "sous-agents",
+c'est-à-dire des copies de lui-même qui travaillent en parallèle :
 
 ```
-"Lance deux agents en parallèle :
- - Agent 1 : Optimise les requêtes SQL dans src/db/
- - Agent 2 : Améliore les messages d'erreur dans src/api/"
+"Fais ces deux choses en même temps :
+ - Optimise les requêtes SQL dans src/db/
+ - Améliore les messages d'erreur dans src/api/"
 ```
+
+Au lieu d'attendre que la première tâche finisse avant de commencer la seconde,
+Claude les traite en parallèle. Pratique quand tu as plusieurs tâches indépendantes.
 
 ---
 
