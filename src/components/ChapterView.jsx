@@ -6,6 +6,7 @@ import { getNextChapter } from '../data/chapters';
 export default function ChapterView({ chapter, isCompleted, onComplete }) {
   const [tab, setTab] = useState('theory');
   const [checkedSteps, setCheckedSteps] = useState([]);
+  const [exampleTab, setExampleTab] = useState('basic');
   const navigate = useNavigate();
   const next = getNextChapter(chapter.id);
 
@@ -120,11 +121,40 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
               Exemple
             </h3>
-            <div className="code-block p-4">
-              <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
-                {chapter.theory.codeExample}
-              </pre>
-            </div>
+            {chapter.theory.codeExamples ? (
+              <div>
+                <div className="flex gap-1 mb-2">
+                  {[
+                    { id: 'basic', label: '👶 Simple' },
+                    { id: 'advanced', label: '⚙️ Technique' },
+                  ].map(({ id, label }) => (
+                    <button
+                      key={id}
+                      onClick={() => setExampleTab(id)}
+                      className={[
+                        'px-3 py-1 rounded-md text-xs font-medium border transition-all',
+                        exampleTab === id
+                          ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
+                          : 'border-[var(--border)] text-[var(--text-secondary)] hover:text-white',
+                      ].join(' ')}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="code-block p-4">
+                  <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                    {chapter.theory.codeExamples[exampleTab]}
+                  </pre>
+                </div>
+              </div>
+            ) : (
+              <div className="code-block p-4">
+                <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                  {chapter.theory.codeExample}
+                </pre>
+              </div>
+            )}
           </div>
 
           {/* Read more link */}

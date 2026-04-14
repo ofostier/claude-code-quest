@@ -67,7 +67,9 @@ export const CHAPTERS = [
         'Au prochain démarrage, il lit ce fichier et "se souvient"',
         '`MEMORY.md` est la table des matières — liste ce qu\'il y a dans le dossier',
       ],
-      codeExample: `---
+      codeExamples: {
+        basic:
+`---
 name: Mon profil
 description: Qui je suis et mes préférences
 type: user
@@ -76,6 +78,21 @@ type: user
 Je m'appelle Olivier.
 Je préfère les explications courtes.
 Je travaille avec React et Node.js.`,
+        advanced:
+`---
+name: Préférences de test
+description: Comment écrire les tests dans ce projet
+type: feedback
+---
+
+Toujours écrire des tests d'intégration, pas de mocks.
+
+**Pourquoi :** les mocks ont masqué un bug de migration
+en production en mars 2024.
+
+**Comment appliquer :** utiliser une vraie DB PostgreSQL
+via Docker en dev. Voir docker-compose.yml.`,
+      },
     },
     challenge: {
       objective: 'Créer un profil utilisateur et tester la persistance entre sessions.',
