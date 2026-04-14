@@ -76,6 +76,10 @@ Essaie maintenant dans Claude Code :
 
 Tu verras Claude exécuter les instructions définies dans les fichiers `.md` correspondants.
 
+> **À retenir** : Claude Code charge les commandes de `.claude/commands/` **au démarrage**.
+> Si tu crées ou modifies un fichier de commande, tu dois **redémarrer Claude Code**
+> pour qu'il soit disponible. En terminal : `exit` puis `claude`.
+
 ---
 
 ## Défi — Pièce 3 à débloquer

@@ -135,6 +135,11 @@ claude-code-quest/
 4. Lance Claude Code dans le projet (Terminal, VS Code ou Desktop — voir ci-dessus)
 5. Utilise `/hint` si tu es bloqué, `/validate` quand tu penses avoir terminé
 
+> **Important** : Claude Code charge `CLAUDE.md` et les commandes de `.claude/commands/`
+> **au démarrage uniquement**. Si tu modifies ces fichiers en cours de session,
+> redémarre Claude Code pour que les changements soient pris en compte.
+> En terminal : tape `exit` puis relance `claude`.
+
 ---
 
 ## Résolution de problèmes
@@ -147,8 +152,10 @@ Claude n'est pas ancré dans le bon répertoire. Selon ton mode :
 
 Test rapide dans tous les cas : demande à Claude *"Résume tes instructions pour ce projet"* — il doit citer les conventions React/Tailwind.
 
-**Les skills `/hint` ne fonctionnent pas ?**
-Vérifiez que les fichiers `.claude/commands/` existent. Claude Code les charge au démarrage.
+**Les commandes `/hint`, `/validate`, `/progress` ne fonctionnent pas ?**
+Les commandes sont chargées au démarrage de Claude Code. Deux causes possibles :
+- **Session ouverte avant la création des fichiers** → redémarre Claude Code (`exit` puis `claude`)
+- **Fichiers absents** → vérifie avec `ls .claude/commands/` que les 3 fichiers `.md` sont présents
 
 **L'app ne se lance pas ?**
 ```bash
