@@ -43,7 +43,7 @@ export const CHAPTERS = [
       validation: [
         'Section `## Mes préférences` présente dans CLAUDE.md',
         'Au moins 2 préférences personnelles ajoutées',
-        'Claude les mentionne lors d\'un test',
+        'Dans Claude Code, taper : "Résume tes instructions pour ce projet" → Claude cite tes préférences',
       ],
       hint: 'Claude lit le fichier mot pour mot. Sois explicite dans tes instructions — "toujours", "jamais", "préférer" sont des mots-clés puissants.',
     },
