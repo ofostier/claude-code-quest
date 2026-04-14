@@ -68,20 +68,32 @@ cat error.log | claude -p "Analyse ces erreurs et propose des corrections"
 claude -p "Vérifie que le code respecte nos conventions" --output-format json
 ```
 
-### Faire plusieurs choses en même temps
+### Qu'est-ce qu'un sous-agent ?
 
-Par défaut Claude travaille une tâche à la fois. Mais tu peux lui demander
-d'en faire plusieurs simultanément — il va alors lancer des "sous-agents",
-c'est-à-dire des copies de lui-même qui travaillent en parallèle :
+Imagine que tu es manager et que tu as une grosse tâche à faire.
+Tu pourrais tout faire toi-même, une chose après l'autre. Ou tu pourrais
+**déléguer** : confier chaque partie à un membre de ton équipe, qui travaille
+de son côté pendant que toi tu fais autre chose.
+
+Un sous-agent, c'est exactement ça : **Claude qui se dédouble**.
+Quand tu lui demandes plusieurs tâches indépendantes, il peut lancer
+des copies de lui-même — chaque copie s'occupe d'une tâche, en même temps.
+
+```
+Toi → Claude (manager)
+         ├── Sous-agent 1 → "Optimise les requêtes SQL"
+         └── Sous-agent 2 → "Améliore les messages d'erreur"
+```
+
+Les deux travaillent en parallèle, puis Claude rassemble leurs résultats
+et te les présente. Tu gagnes du temps sur les tâches qui n'ont pas besoin
+de se faire dans un ordre précis.
 
 ```
 "Fais ces deux choses en même temps :
  - Optimise les requêtes SQL dans src/db/
  - Améliore les messages d'erreur dans src/api/"
 ```
-
-Au lieu d'attendre que la première tâche finisse avant de commencer la seconde,
-Claude les traite en parallèle. Pratique quand tu as plusieurs tâches indépendantes.
 
 ---
 
