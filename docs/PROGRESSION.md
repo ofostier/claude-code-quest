@@ -1,5 +1,64 @@
 # Guide de Progression — Claude Code Quest
 
+## Ce que tu peux modifier sans risque
+
+Les défis te demandent de modifier des fichiers — c'est voulu. Voici ce qui
+est **à toi** et ce qu'il ne faut **pas toucher** :
+
+```
+claude-code-quest/
+│
+├── ✅ CLAUDE.md                ← À toi (Pièce 1)
+│
+├── ✅ .claude/                 ← À toi (Pièces 2, 3, 4, 6)
+│   ├── memory/                 ← Crée tes fichiers mémoire ici
+│   ├── commands/               ← Crée tes commandes ici
+│   └── settings.json           ← Crée-le pour les hooks et MCP
+│
+├── ✅ docs/                    ← À toi (Pièce 5 : ARCHITECTURE.md)
+│
+├── ⚠️  src/                    ← Ne touche pas, sauf Pièce 7
+│                                  (HallOfFame.jsx uniquement)
+│
+└── 🔒 package.json, vite.config.js, etc.   ← Ne pas modifier
+```
+
+En résumé : tout ce qui est dans `.claude/` et `CLAUDE.md` t'appartient.
+Le code de l'application dans `src/` est hors-scope jusqu'à la Pièce 7.
+
+---
+
+## Filet de sécurité — git
+
+Tout est versionné. Si tu casses quelque chose, tu peux toujours revenir en arrière.
+
+**Voir ce qui a changé :**
+```bash
+git status          # fichiers modifiés
+git diff            # détail des changements
+```
+
+**Annuler une modification sur un fichier :**
+```bash
+git restore CLAUDE.md          # remet CLAUDE.md à son état d'origine
+git restore .claude/           # remet tout .claude/ à l'état d'origine
+```
+
+**Tout remettre à zéro (état initial du repo) :**
+```bash
+git restore .
+```
+> ⚠️ Cette commande efface **toutes** tes modifications non commitées.
+> Ta progression dans l'app web (localStorage) n'est pas affectée.
+
+**Sauvegarder ton travail avant d'expérimenter :**
+```bash
+git add .claude/ CLAUDE.md
+git commit -m "sauvegarde pièce X"
+```
+
+---
+
 ## Comment progresser
 
 Le parcours est conçu pour être **linéaire mais flexible** :
