@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Claude Code activity log (personal, not shared)
+# Claude Code — fichiers personnels, non partagés
 .claude/activity.log
+.claude/settings.local.json

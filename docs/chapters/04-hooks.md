@@ -10,8 +10,24 @@
 
 ### Qu'est-ce qu'un Hook ?
 
-Un hook est une commande shell configurée dans `.claude/settings.json` qui
+Un hook est une commande shell configurée dans un fichier de settings qui
 se déclenche automatiquement en réponse à des événements Claude Code.
+
+### `settings.json` vs `settings.local.json`
+
+Il existe deux fichiers de configuration, et c'est important de savoir lequel utiliser :
+
+| Fichier | Usage | Committer dans git ? |
+|---------|-------|---------------------|
+| `.claude/settings.json` | Paramètres **partagés** avec l'équipe (conventions, hooks de projet) | ✅ Oui |
+| `.claude/settings.local.json` | Paramètres **personnels** (tokens, préférences locales, hooks perso) | ❌ Non |
+
+**En pratique :**
+- Un hook qui lance `prettier` sur chaque fichier modifié → `settings.json` (toute l'équipe en bénéficie)
+- Un hook qui joue un son quand Claude finit → `settings.local.json` (c'est ta préférence perso)
+- Un token d'API dans la config → `settings.local.json` (ne jamais committer un secret)
+
+Les deux fichiers ont exactement la même structure. Claude Code les lit tous les deux et fusionne leur contenu.
 
 ### Les événements disponibles
 
@@ -93,9 +109,9 @@ $CLAUDE_HOOK_EVENT         # Type d'événement
 
 ## Démo
 
-Regarde si un fichier `.claude/settings.json` existe déjà :
+Regarde les fichiers de settings qui existent déjà :
 ```bash
-cat .claude/settings.json 2>/dev/null || echo "Pas encore créé"
+ls .claude/settings*.json 2>/dev/null || echo "Aucun fichier settings encore"
 ```
 
 ---
@@ -106,7 +122,8 @@ cat .claude/settings.json 2>/dev/null || echo "Pas encore créé"
 
 ### Étapes
 
-1. Crée `.claude/settings.json` :
+1. Crée `.claude/settings.local.json` (on utilise la version locale car ce log
+   est personnel — pas besoin de le partager) :
 
 ```json
 {
@@ -146,7 +163,7 @@ Modifie le hook pour qu'il logge aussi le nom de l'outil utilisé avec `$CLAUDE_
 Utilise `/validate` pour vérifier.
 
 **Critères** :
-- [ ] Fichier `.claude/settings.json` créé avec au moins 1 hook
+- [ ] Fichier `.claude/settings.local.json` (ou `settings.json`) créé avec au moins 1 hook
 - [ ] Fichier `.claude/activity.log` contient au moins une entrée
 - [ ] Le hook se déclenche automatiquement (pas manuellement)
 
