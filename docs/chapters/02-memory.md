@@ -111,16 +111,19 @@ dans une nouvelle session.
 - [Mon profil](user_profile.md) — Mes préférences et mon contexte
 ```
 
-2. Dans Claude Code, dis :
+2. Dans Claude Code, dis **exactement** ceci (préciser le nom du fichier est important,
+   sinon Claude peut écrire dans un fichier existant au lieu d'en créer un nouveau) :
    ```
-   Mémorise que je suis [décris-toi en 2-3 phrases : niveau, technos, préférences]
+   Crée un fichier .claude/memory/user_profile.md pour mémoriser mon profil :
+   [décris-toi en 2-3 phrases : niveau, technos, préférences]
    ```
 
-3. Claude va créer le fichier `user_profile.md` tout seul.
-   Vérifie qu'il existe :
+3. Vérifie que le **nouveau** fichier a bien été créé :
    ```bash
    cat .claude/memory/user_profile.md
    ```
+   Si tu obtiens une erreur "no such file", c'est que Claude a écrit ailleurs.
+   Répète l'étape 2 en précisant bien le chemin du fichier.
 
 4. Quitte Claude Code (`exit`) et relance-le (`claude`).
 
