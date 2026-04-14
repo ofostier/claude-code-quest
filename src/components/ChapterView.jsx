@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, BookOpen, Zap, CheckSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Zap, CheckSquare, Eye } from 'lucide-react';
 import { getNextChapter } from '../data/chapters';
 
 export default function ChapterView({ chapter, isCompleted, onComplete }) {
   const [tab, setTab] = useState('theory');
   const [checkedSteps, setCheckedSteps] = useState([]);
   const [exampleTab, setExampleTab] = useState('basic');
+  const [showSolution, setShowSolution] = useState(false);
   const navigate = useNavigate();
   const next = getNextChapter(chapter.id);
 
@@ -224,6 +225,40 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
               </div>
             </div>
           </div>
+
+          {/* Solution */}
+          {chapter.challenge.solution && (
+            <div>
+              {!showSolution ? (
+                <button
+                  onClick={() => setShowSolution(true)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-[var(--border)] text-sm text-[var(--text-secondary)] hover:text-white hover:border-purple-500/40 transition-all"
+                >
+                  <Eye size={14} />
+                  Voir la réponse
+                </button>
+              ) : (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-amber-500/20">
+                    <span className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+                      <Eye size={12} /> Solution
+                    </span>
+                    <button
+                      onClick={() => setShowSolution(false)}
+                      className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors"
+                    >
+                      masquer
+                    </button>
+                  </div>
+                  <div className="p-4 code-block rounded-none border-0">
+                    <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                      {chapter.challenge.solution}
+                    </pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Validation checklist */}
           <div>

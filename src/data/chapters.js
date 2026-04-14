@@ -206,6 +206,22 @@ Résume ce qui est prêt et ce qui bloque.`,
         'Le hook s\'est déclenché sans que tu aies rien fait manuellement',
       ],
       hint: 'Le hook `Stop` se déclenche après chaque réponse de Claude, peu importe ce qu\'il fait. C\'est le plus facile à tester.',
+      solution: `// Fichier : .claude/settings.local.json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \\"[$(date '+%H:%M:%S')] Claude a terminé\\" >> .claude/activity.log"
+          }
+        ]
+      }
+    ]
+  }
+}`,
     },
   },
   {
