@@ -106,7 +106,7 @@ via Docker en dev. Voir docker-compose.yml.`,
       validation: [
         'Fichier `MEMORY.md` créé et à jour (liste tous les fichiers du dossier)',
         'Fichier `user_profile.md` créé par Claude',
-        'Claude retrouve les infos dans une nouvelle session',
+        'Taper "Qu\'est-ce que tu sais sur moi ?" → Claude répond avec ton profil sans que tu aies rien expliqué',
       ],
       hint: 'Sois précis dans ce que tu demandes à Claude de mémoriser. "Mémorise que je préfère X" fonctionne mieux que "souviens-toi de X".',
     },
