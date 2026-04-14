@@ -6,13 +6,13 @@ type: project
 
 # Progression dans Claude Code Quest
 
-**Démarré le :** (à remplir par Claude lors de la première session)
-**Niveau actuel :** Pièce 1 — CLAUDE.md
+**Démarré le :** 2026-04-14
+**Niveau actuel :** Pièce 2 — Memory
 
 ## Pièces débloquées
 
-- [x] Pièce 1 : CLAUDE.md (débloquée par défaut)
-- [ ] Pièce 2 : Memory
+- [x] Pièce 1 : CLAUDE.md (validée le 2026-04-14)
+- [x] Pièce 2 : Memory
 - [ ] Pièce 3 : Skills
 - [ ] Pièce 4 : Hooks
 - [ ] Pièce 5 : Session
@@ -25,4 +25,5 @@ _(Claude remplit cette section au fil des sessions)_
 
 ## Préférences apprises
 
-_(Claude note ici les préférences de l'utilisateur)_
+- Toujours parler en français
+- Commentaires de code en anglais

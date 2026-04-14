@@ -11,7 +11,10 @@ Lis `docs/chapters/0X-nom.md` pour connaître les critères de validation.
 Vérifie les critères en lisant les fichiers pertinents du projet.
 
 Si validé :
-1. Mets à jour `.claude/memory/progress.md` pour cocher la pièce
+1. Mets à jour `.claude/memory/progress.md` :
+   - Coche la pièce validée avec la date du jour
+   - Si "Démarré le" contient encore le placeholder, remplace-le par la date du jour (format YYYY-MM-DD)
+   - Si des préférences ont été apprises pendant le défi, ajoute-les dans "Préférences apprises"
 2. Affiche un message de félicitations avec le contexte de la prochaine pièce
 
 Format de réponse :
