@@ -59,6 +59,33 @@ git commit -m "sauvegarde pièce X"
 
 ---
 
+## Branches : main vs workshop
+
+Le repo utilise deux branches :
+
+| Branche | Rôle |
+|---------|------|
+| `main` | État de référence propre — ne pas modifier |
+| `workshop` | Ta branche de travail — fais tous tes défis ici |
+
+**Tu dois être sur `workshop` pour pratiquer :**
+```bash
+git checkout workshop   # passer sur ta branche de travail
+git branch              # vérifier sur quelle branche tu es
+```
+
+**Revenir à l'état de départ de `main` si besoin :**
+```bash
+git checkout main
+```
+
+**Comparer ce que tu as modifié par rapport à main :**
+```bash
+git diff main..workshop
+```
+
+---
+
 ## Comment progresser
 
 Le parcours est conçu pour être **linéaire mais flexible** :
