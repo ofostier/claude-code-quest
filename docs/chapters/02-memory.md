@@ -57,6 +57,10 @@ Il va lire ses fichiers et te répondre avec ce qu'il a retenu.
 Oublie ma préférence sur les commentaires
 ```
 
+> **Pas besoin de redémarrer.** Contrairement aux commandes slash (Pièce 3),
+> la mémoire fonctionne immédiatement : Claude lit et écrit ses fichiers
+> à la demande, dans n'importe quelle session.
+
 ### À quoi ressemble un fichier mémoire
 
 C'est juste un fichier texte avec une petite entête :
@@ -125,14 +129,16 @@ dans une nouvelle session.
    Si tu obtiens une erreur "no such file", c'est que Claude a écrit ailleurs.
    Répète l'étape 2 en précisant bien le chemin du fichier.
 
-4. Quitte Claude Code (`exit`) et relance-le (`claude`).
-
-5. Dans cette nouvelle session, demande :
+4. Dans la **même session** ou dans une **nouvelle session**, demande :
    ```
    Qu'est-ce que tu sais sur moi ?
    ```
-   Claude doit te répondre avec les infos que tu lui as données à l'étape 2,
-   **sans que tu aies rien expliqué cette fois**.
+   Claude doit te répondre avec les infos que tu lui as données à l'étape 2.
+
+   > **Contrairement aux commandes**, la mémoire ne nécessite pas de redémarrage.
+   > Claude peut lire et écrire ses fichiers mémoire à tout moment, dans n'importe
+   > quelle session. Si tu ouvres une nouvelle session dans une semaine, il se souviendra
+   > quand même — tant que les fichiers sont là.
 
 ### Auto-évaluation
 
