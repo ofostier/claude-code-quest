@@ -60,22 +60,22 @@ export const CHAPTERS = [
     glowColor: 'rgba(16, 185, 129, 0.4)',
     duration: '~20 min',
     theory: {
-      summary: 'Le système de mémoire permet à Claude de retenir tes préférences et l\'état du projet entre les sessions.',
+      summary: 'Par défaut, Claude repart de zéro à chaque session. La mémoire, c\'est juste un dossier de fichiers texte qu\'il lit au démarrage — si c\'est écrit, il s\'en souvient.',
       keyPoints: [
-        'Fichiers Markdown dans `.claude/memory/`',
-        'Frontmatter YAML : name, description, type',
-        '4 types : user, feedback, project, reference',
-        '`MEMORY.md` est l\'index lu automatiquement',
+        'Sans mémoire : Claude ne se souvient de rien d\'une session à l\'autre',
+        'Avec mémoire : tu lui dis "souviens-toi de X", il crée un fichier',
+        'Au prochain démarrage, il lit ce fichier et "se souvient"',
+        '`MEMORY.md` est la table des matières — liste ce qu\'il y a dans le dossier',
       ],
       codeExample: `---
-name: Préférences de test
-description: Style de tests préféré
+name: Mon profil
+description: Qui je suis et mes préférences
 type: user
 ---
 
-Préfère les tests d'intégration aux mocks.
-Raison : "Les mocks ont causé un incident en prod."
-Toujours tester contre une vraie DB.`,
+Je m'appelle Olivier.
+Je préfère les explications courtes.
+Je travaille avec React et Node.js.`,
     },
     challenge: {
       objective: 'Créer un profil utilisateur et tester la persistance entre sessions.',
