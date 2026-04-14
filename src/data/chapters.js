@@ -97,14 +97,14 @@ via Docker en dev. Voir docker-compose.yml.`,
     challenge: {
       objective: 'Créer un profil utilisateur et tester la persistance entre sessions.',
       steps: [
-        'Crée `.claude/memory/MEMORY.md` (l\'index)',
         'Dans Claude Code, dis : "Crée un fichier .claude/memory/user_profile.md pour mémoriser mon profil : [décris-toi]" — préciser le nom évite que Claude écrive dans un fichier existant',
         'Vérifie avec `cat .claude/memory/user_profile.md` que le fichier a bien été créé',
+        'Fais `ls .claude/memory/` pour voir tous les fichiers présents',
+        'Crée/mets à jour `MEMORY.md` pour qu\'il liste tous les fichiers du dossier',
         'Dans la même session ou une nouvelle, demande : "Qu\'est-ce que tu sais sur moi ?"',
-        'Claude cite ton profil sans que tu aies rien réexpliqué (pas besoin de redémarrer)',
       ],
       validation: [
-        'Fichier `MEMORY.md` créé avec au moins 2 entrées',
+        'Fichier `MEMORY.md` créé et à jour (liste tous les fichiers du dossier)',
         'Fichier `user_profile.md` créé par Claude',
         'Claude retrouve les infos dans une nouvelle session',
       ],

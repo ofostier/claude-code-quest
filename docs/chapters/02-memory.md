@@ -105,29 +105,43 @@ dans une nouvelle session.
 
 ### Étapes
 
-1. Crée le fichier `.claude/memory/MEMORY.md` avec ce contenu
-   (c'est la "table des matières" du carnet) :
-
-```markdown
-# Ma mémoire — Claude Code Quest
-
-- [Progression](progress.md) — Suivi du parcours puzzle
-- [Mon profil](user_profile.md) — Mes préférences et mon contexte
-```
-
-2. Dans Claude Code, dis **exactement** ceci (préciser le nom du fichier est important,
+1. Dans Claude Code, dis **exactement** ceci (préciser le nom du fichier est important,
    sinon Claude peut écrire dans un fichier existant au lieu d'en créer un nouveau) :
    ```
    Crée un fichier .claude/memory/user_profile.md pour mémoriser mon profil :
    [décris-toi en 2-3 phrases : niveau, technos, préférences]
    ```
 
-3. Vérifie que le **nouveau** fichier a bien été créé :
+2. Vérifie que le **nouveau** fichier a bien été créé :
    ```bash
    cat .claude/memory/user_profile.md
    ```
    Si tu obtiens une erreur "no such file", c'est que Claude a écrit ailleurs.
-   Répète l'étape 2 en précisant bien le chemin du fichier.
+   Répète l'étape 1 en précisant bien le chemin du fichier.
+
+3. Crée ou mets à jour le fichier `.claude/memory/MEMORY.md`.
+   C'est la **table des matières** du carnet — il doit lister tous les fichiers
+   qui existent dans le dossier. Adapte-le à ce que tu vois réellement dans
+   `.claude/memory/` :
+
+   ```bash
+   ls .claude/memory/
+   ```
+
+   Voici un exemple de ce que `MEMORY.md` peut ressembler **après quelques sessions** :
+
+   ```markdown
+   # Ma mémoire — Claude Code Quest
+
+   - [Progression](progress.md) — Suivi du parcours puzzle
+   - [Mon profil](user_profile.md) — Mes préférences et mon contexte
+   - [Préférences de code](code_preferences.md) — Style et conventions
+   - [Stack projet](project_stack.md) — Technos et décisions d'architecture
+   ```
+
+   > **À garder à jour :** chaque fois que Claude crée un nouveau fichier mémoire,
+   > ajoute une ligne dans `MEMORY.md`. C'est ce fichier que Claude lit en premier
+   > pour savoir quoi charger.
 
 4. Dans la **même session** ou dans une **nouvelle session**, demande :
    ```
