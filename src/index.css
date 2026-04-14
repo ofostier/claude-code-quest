@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #0d0e13;
+    --bg-secondary: #13141a;
+    --bg-card: #1a1b24;
+    --border: #2a2b38;
+    --text-primary: #e2e8f0;
+    --text-secondary: #8892a4;
+    --accent: #a855f7;
+    --accent-glow: rgba(168, 85, 247, 0.3);
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer utilities {
+  .glow-purple {
+    box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(168, 85, 247, 0.1);
+  }
+
+  .glow-piece {
+    box-shadow:
+      0 0 15px rgba(168, 85, 247, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .piece-locked {
+    filter: grayscale(0.7) brightness(0.6);
+  }
+
+  .card-hover {
+    transition: all 0.2s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, #a855f7, #06b6d4);
+    border-radius: 9999px;
+    transition: width 0.5s ease;
+  }
+
+  .tab-active {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: #a855f7;
+    color: #d8b4fe;
+  }
+
+  .code-block {
+    background: #0d0e13;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  .step-number {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+}
