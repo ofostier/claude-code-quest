@@ -10,7 +10,7 @@
 
 ### Qu'est-ce qu'un Skill ?
 
-Un Skill est un fichier `.md` dans `.claude/skills/` qui décrit une action
+Un Skill est un fichier `.md` dans `.claude/commands/` qui décrit une action
 que Claude doit exécuter quand tu tapes `/nom-du-skill`.
 
 ```markdown
@@ -57,7 +57,7 @@ description: Description    ← Ce que fait la commande (affiché dans /help)
 
 ### Skills déjà disponibles dans ce projet
 
-Regarde dans `.claude/skills/` — tu as déjà :
+Regarde dans `.claude/commands/` — tu as déjà :
 - `/hint` — Obtenir un indice pour le défi courant
 - `/validate` — Valider ton défi
 - `/progress` — Voir ta progression
@@ -84,7 +84,7 @@ Tu verras Claude exécuter les instructions définies dans les fichiers `.md` co
 
 ### Étapes
 
-1. Crée le fichier `.claude/skills/my-review.md` :
+1. Crée le fichier `.claude/commands/my-review.md` :
 
 ```markdown
 ---
@@ -118,7 +118,7 @@ Présente les résultats avec des emojis : ✅ bien, ⚠️ à améliorer, ❌ p
 Utilise `/validate` pour vérifier.
 
 **Critères** :
-- [ ] Fichier `.claude/skills/my-review.md` créé
+- [ ] Fichier `.claude/commands/my-review.md` créé
 - [ ] Au moins une règle personnalisée ajoutée
 - [ ] Skill testé avec succès sur un fichier du projet
 

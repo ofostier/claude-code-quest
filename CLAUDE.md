@@ -23,7 +23,7 @@ L'objectif est de débloquer les 7 pièces du puzzle en pratiquant les fonctionn
    le chapitre en cours dans `docs/chapters/`
 2. Suggère des défis progressifs adaptés au chapitre débloqué
 3. Ne révèle jamais la solution d'un défi avant que l'utilisateur ait essayé
-4. Utilise les skills disponibles dans `.claude/skills/` quand pertinent
+4. Utilise les commandes disponibles dans `.claude/commands/` quand pertinent
 
 ## Progression actuelle
 

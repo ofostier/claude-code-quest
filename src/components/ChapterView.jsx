@@ -193,9 +193,19 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
 
           {/* Validation checklist */}
           <div>
-            <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
-              Critères de validation
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                Auto-évaluation
+              </h3>
+              <span className="text-xs text-[var(--text-secondary)] bg-[var(--bg-card)] border border-[var(--border)] px-2 py-0.5 rounded-full">
+                sur l'honneur
+              </span>
+            </div>
+            <p className="text-xs text-[var(--text-secondary)] mb-3 leading-relaxed">
+              Ces cases ne sont pas vérifiées automatiquement — coche-les uniquement si tu as
+              <strong className="text-[var(--text-primary)]"> vraiment</strong> réalisé chaque étape.
+              Pour une validation par Claude, utilise <code className="text-purple-400">/validate</code>.
+            </p>
             <div className="space-y-2">
               {chapter.challenge.validation.map((criterion, i) => (
                 <button
@@ -238,7 +248,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
               <>
                 <CheckSquare size={16} />
                 {allStepsChecked
-                  ? `Valider et débloquer la pièce ${chapter.id}`
+                  ? `Je confirme avoir réalisé ces étapes — débloquer la pièce ${chapter.id}`
                   : `Coche tous les critères (${checkedSteps.length}/${chapter.challenge.validation.length})`}
               </>
             )}

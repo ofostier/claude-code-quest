@@ -108,7 +108,7 @@ Toujours tester contre une vraie DB.`,
     theory: {
       summary: 'Les Skills sont des fichiers Markdown qui définissent des commandes slash (/nom) que Claude exécute à la demande.',
       keyPoints: [
-        'Fichiers `.md` dans `.claude/skills/`',
+        'Fichiers `.md` dans `.claude/commands/`',
         'Invoqués avec `/nom-du-skill`',
         'Claude lit et exécute les instructions du fichier',
         'Peuvent lire la mémoire, lancer des outils, formater des sorties',
@@ -130,13 +130,13 @@ Résume ce qui est prêt et ce qui bloque.`,
     challenge: {
       objective: 'Créer ton propre skill `/my-review` personnalisé.',
       steps: [
-        'Crée `.claude/skills/my-review.md`',
+        'Crée `.claude/commands/my-review.md`',
         'Définis une revue de code avec au moins une règle personnelle',
         'Utilise `/my-review` sur un fichier du projet',
         'Affine les instructions selon le résultat',
       ],
       validation: [
-        'Fichier `.claude/skills/my-review.md` créé',
+        'Fichier `.claude/commands/my-review.md` créé',
         'Au moins une règle personnalisée dans le skill',
         'Skill testé avec succès sur un fichier',
       ],

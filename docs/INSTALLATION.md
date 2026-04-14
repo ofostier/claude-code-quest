@@ -38,12 +38,63 @@ L'application s'ouvre sur `http://localhost:5173`
 
 ## Lancer Claude Code dans le projet
 
+Claude Code est disponible en **3 modes** — choisis celui que tu préfères.
+Dans tous les cas, l'essentiel est que Claude soit **ancré dans le bon répertoire** :
+il doit "voir" le dossier `claude-code-quest/` pour lire automatiquement `CLAUDE.md`
+et accéder aux skills et à la mémoire du projet.
+
+---
+
+### Option A — Terminal (CLI)
+
 ```bash
 # Depuis la racine du projet
+cd claude-code-quest
 claude
 ```
 
-Claude va automatiquement lire `CLAUDE.md` et connaître le contexte du projet.
+Claude démarre dans le répertoire courant. Vérifie avec `pwd` que tu es bien
+à la racine de `claude-code-quest/` avant de lancer.
+
+---
+
+### Option B — Extension VS Code
+
+1. Installe l'extension **Claude Code** depuis le marketplace VS Code
+2. Ouvre le dossier `claude-code-quest/` dans VS Code
+   (`Fichier > Ouvrir le dossier...` ou `code claude-code-quest/`)
+3. Lance Claude Code via la palette de commandes :
+   `Ctrl+Shift+P` → `Claude Code: Open`
+   ou clique sur l'icône Claude dans la barre latérale
+
+> **Important** : ouvre bien le dossier `claude-code-quest/` comme **workspace racine**,
+> pas un dossier parent. Sinon Claude ne trouve pas `CLAUDE.md`.
+
+---
+
+### Option C — Claude Code Desktop
+
+1. Ouvre l'application **Claude Code Desktop**
+2. Clique sur **"Open Folder"** (ou `Fichier > Ouvrir`)
+3. Sélectionne le dossier `claude-code-quest/`
+4. Le nom du projet doit apparaître dans la barre de titre
+
+> **Important** : si tu as plusieurs projets ouverts, vérifie que `claude-code-quest`
+> est bien le projet **actif** (sélectionné dans la liste des workspaces).
+
+---
+
+### Comment vérifier que Claude est bien ancré ?
+
+Dans n'importe quel mode, demande à Claude :
+
+```
+Résume tes instructions pour ce projet
+```
+
+Il doit répondre en mentionnant les conventions React/Tailwind et le puzzle.
+S'il répond de façon générique, c'est qu'il n'a pas lu `CLAUDE.md` —
+vérifie le répertoire de travail.
 
 ---
 
@@ -56,7 +107,7 @@ claude-code-quest/
 │   ├── memory/                  ← Ta progression et tes préférences
 │   │   ├── MEMORY.md            ← Index des mémoires
 │   │   └── progress.md          ← Suivi du puzzle
-│   └── skills/                  ← Tes commandes slash
+│   └── commands/                ← Tes commandes slash
 │       ├── hint.md              ← /hint
 │       ├── validate.md          ← /validate
 │       └── progress.md          ← /progress
@@ -81,7 +132,7 @@ claude-code-quest/
 1. Lance `npm run dev` et ouvre `http://localhost:5173`
 2. Clique sur **Pièce 1 : CLAUDE.md** pour commencer
 3. Lis la théorie, essaie la démo
-4. Ouvre un terminal et lance `claude` dans le répertoire du projet
+4. Lance Claude Code dans le projet (Terminal, VS Code ou Desktop — voir ci-dessus)
 5. Utilise `/hint` si tu es bloqué, `/validate` quand tu penses avoir terminé
 
 ---
@@ -89,10 +140,15 @@ claude-code-quest/
 ## Résolution de problèmes
 
 **Claude ne lit pas CLAUDE.md ?**
-Vérifiez que Claude Code est lancé depuis la racine du projet : `pwd` doit afficher le chemin du projet.
+Claude n'est pas ancré dans le bon répertoire. Selon ton mode :
+- **Terminal** : `pwd` doit afficher le chemin de `claude-code-quest/`
+- **VS Code** : le workspace racine doit être `claude-code-quest/` (pas un dossier parent)
+- **Desktop** : vérifie que `claude-code-quest` est le projet actif dans la liste des workspaces
+
+Test rapide dans tous les cas : demande à Claude *"Résume tes instructions pour ce projet"* — il doit citer les conventions React/Tailwind.
 
 **Les skills `/hint` ne fonctionnent pas ?**
-Vérifiez que les fichiers `.claude/skills/` existent. Claude Code les charge au démarrage.
+Vérifiez que les fichiers `.claude/commands/` existent. Claude Code les charge au démarrage.
 
 **L'app ne se lance pas ?**
 ```bash

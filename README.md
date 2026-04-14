@@ -52,7 +52,7 @@ claude-code-quest/
 ├── CLAUDE.md                    ← Pièce 1 en action !
 ├── .claude/
 │   ├── memory/progress.md       ← Ta progression
-│   └── skills/                  ← /hint /validate /progress
+│   └── commands/                ← /hint /validate /progress
 ├── docs/chapters/               ← Les 7 chapitres détaillés
 └── src/                         ← Application React (tableau de bord)
 ```

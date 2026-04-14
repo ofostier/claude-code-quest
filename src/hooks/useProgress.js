@@ -5,9 +5,9 @@ const STORAGE_KEY = 'ccq_progress';
 const loadProgress = () => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : { completed: [1], current: 1 };
+    return saved ? JSON.parse(saved) : { completed: [], current: 1 };
   } catch {
-    return { completed: [1], current: 1 };
+    return { completed: [], current: 1 };
   }
 };
 
@@ -42,7 +42,7 @@ export function useProgress() {
   );
 
   const resetProgress = useCallback(() => {
-    const reset = { completed: [1], current: 1 };
+    const reset = { completed: [], current: 1 };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reset));
     setProgress(reset);
   }, []);
