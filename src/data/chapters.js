@@ -155,7 +155,7 @@ Résume ce qui est prêt et ce qui bloque.`,
       validation: [
         'Fichier `.claude/commands/my-review.md` créé',
         'Au moins une règle personnalisée dans le skill',
-        'Skill testé avec succès sur un fichier',
+        'Taper `/my-review` dans Claude Code → Claude répond avec une liste de points ✅/⚠️/❌',
       ],
       hint: 'Les meilleurs skills ont un format de sortie défini (ex: emojis ✅/⚠️/❌). Claude suivra exactement le format que tu spécifies.',
     },

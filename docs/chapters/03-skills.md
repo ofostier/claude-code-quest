@@ -124,7 +124,7 @@ Utilise `/validate` pour vérifier.
 **Critères** :
 - [ ] Fichier `.claude/commands/my-review.md` créé
 - [ ] Au moins une règle personnalisée ajoutée
-- [ ] Skill testé avec succès sur un fichier du projet
+- [ ] Taper `/my-review` dans Claude Code → Claude répond avec une liste de points ✅/⚠️/❌
 
 ---
 
