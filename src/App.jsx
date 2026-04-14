@@ -32,6 +32,7 @@ function ChapterPage({ isUnlocked, isCompleted, completeChapter }) {
 
   return (
     <ChapterView
+      key={chapter.id}
       chapter={chapter}
       isCompleted={isCompleted(chapter.id)}
       onComplete={completeChapter}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, BookOpen, Zap, CheckSquare } from 'lucide-react';
 import { getNextChapter } from '../data/chapters';
@@ -8,6 +8,10 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
   const [checkedSteps, setCheckedSteps] = useState([]);
   const navigate = useNavigate();
   const next = getNextChapter(chapter.id);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleStep = (idx) => {
     setCheckedSteps((prev) =>
