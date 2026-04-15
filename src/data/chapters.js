@@ -317,17 +317,20 @@ claude mcp add github -- npx -y @modelcontextprotocol/server-github
       },
     },
     challenge: {
-      objective: 'Enregistrer un serveur MCP et prouver qu\'il est actif dans une session.',
+      objective: 'Enregistrer un serveur MCP, prouver qu\'il est actif, et l\'utiliser pour explorer le projet.',
       steps: [
         'Dans un terminal, depuis le projet : `claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .`',
         'Vérifie l\'enregistrement : `claude mcp list` → `filesystem` doit apparaître',
         'Redémarre Claude Code (`exit` puis `claude`)',
         'Dans Claude Code, demande : "Quels outils MCP as-tu disponibles dans cette session ?"',
+        'Teste le MCP : demande "Cherche tous les fichiers .jsx du projet et liste-les"',
+        'Teste encore : "Y a-t-il des console.log dans le code source ?"',
       ],
       validation: [
         '`claude mcp list` affiche le serveur `filesystem`',
         'Claude Code redémarré après l\'enregistrement',
-        'Demander "Quels outils MCP as-tu ?" → Claude mentionne `read_file`, `list_directory`...',
+        '"Quels outils MCP as-tu ?" → Claude mentionne `read_file`, `list_directory`, `search_files`...',
+        'Claude a listé les fichiers .jsx via MCP (pas juste avec ses outils natifs)',
       ],
       hint: 'La commande `claude mcp add` écrit dans `~/.claude.json`. C\'est la seule méthode fiable — éditer settings.json manuellement ne fonctionne pas avec le CLI actuel.',
     },

@@ -245,6 +245,15 @@ Quels outils MCP as-tu disponibles dans cette session ?
 ```
 Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`.
 
+5. **Teste vraiment le MCP** — demande quelque chose qui prouve qu'il s'en sert :
+```
+Cherche tous les fichiers .jsx du projet et liste-les
+```
+```
+Y a-t-il des console.log dans le code source ?
+```
+Claude utilisera `search_files` du serveur MCP — tu verras les appels d'outils `mcp__filesystem__*` dans sa réponse.
+
 ---
 
 ### Option B — GitHub (démontre vraiment la puissance de MCP)
@@ -275,7 +284,8 @@ Si l'issue apparaît sur GitHub → MCP fonctionne.
 - [ ] `claude mcp add` exécuté avec succès
 - [ ] `claude mcp list` affiche le serveur
 - [ ] Claude Code redémarré après l'enregistrement
-- [ ] Demander "Quels outils MCP as-tu ?" → Claude mentionne les outils du serveur
+- [ ] "Quels outils MCP as-tu ?" → Claude mentionne les outils du serveur
+- [ ] Claude a utilisé `mcp__filesystem__search_files` pour lister les fichiers .jsx
 
 ---
 
