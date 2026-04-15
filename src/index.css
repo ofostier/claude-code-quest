@@ -12,6 +12,25 @@
     --accent-glow: rgba(168, 85, 247, 0.3);
   }
 
+  :root.light {
+    --bg-primary: #f4f5f9;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --border: #e2e6f0;
+    --text-primary: #1a1f36;
+    --text-secondary: #6b7280;
+    --accent: #7c3aed;
+    --accent-glow: rgba(124, 58, 237, 0.15);
+  }
+
+  :root.light .code-block pre {
+    color: #2d3748;
+  }
+
+  :root.light .code-block {
+    background: #f0f2f8;
+  }
+
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
@@ -61,7 +80,7 @@
   }
 
   .code-block {
-    background: #0d0e13;
+    background: var(--bg-primary);
     border: 1px solid var(--border);
     border-radius: 8px;
     font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;

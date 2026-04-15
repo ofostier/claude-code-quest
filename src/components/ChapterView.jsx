@@ -69,7 +69,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white">{chapter.title}</h1>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">{chapter.title}</h1>
             <p className="text-[var(--text-secondary)] text-sm">{chapter.subtitle}</p>
           </div>
         </div>
@@ -99,7 +99,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
         <div className="space-y-6">
           {/* Summary */}
           <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-            <p className="text-sm text-purple-200 leading-relaxed">
+            <p className="text-sm text-[var(--text-primary)] leading-relaxed">
               {chapter.theory.summary}
             </p>
           </div>
@@ -146,14 +146,14 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
                   ))}
                 </div>
                 <div className="code-block p-4">
-                  <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                  <pre className="text-sm text-[var(--text-primary)] whitespace-pre-wrap overflow-x-auto">
                     {chapter.theory.codeExamples[exampleTab]}
                   </pre>
                 </div>
               </div>
             ) : (
               <div className="code-block p-4">
-                <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                <pre className="text-sm text-[var(--text-primary)] whitespace-pre-wrap overflow-x-auto">
                   {chapter.theory.codeExample}
                 </pre>
               </div>
@@ -167,7 +167,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           >
             <BookOpen size={16} className="text-purple-400 shrink-0" />
             <div className="text-left">
-              <p className="text-xs font-medium text-white group-hover:text-purple-300 transition-colors">
+              <p className="text-xs font-medium text-[var(--text-primary)] group-hover:text-purple-400 transition-colors">
                 Documentation complète
               </p>
               <p className="text-xs text-[var(--text-secondary)] font-mono">
@@ -244,7 +244,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           >
             <BookOpen size={16} className="text-purple-400 shrink-0" />
             <div className="text-left">
-              <p className="text-xs font-medium text-white group-hover:text-purple-300 transition-colors">
+              <p className="text-xs font-medium text-[var(--text-primary)] group-hover:text-purple-400 transition-colors">
                 Documentation complète
               </p>
               <p className="text-xs text-[var(--text-secondary)] font-mono">
@@ -281,7 +281,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
                     </button>
                   </div>
                   <div className="p-4 code-block rounded-none border-0">
-                    <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                    <pre className="text-sm text-[var(--text-primary)] whitespace-pre-wrap overflow-x-auto">
                       {chapter.challenge.solution}
                     </pre>
                   </div>
