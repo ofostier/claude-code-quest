@@ -195,10 +195,10 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           {/* Objective */}
           <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
             <div className="flex items-start gap-2">
-              <span className="text-amber-400">🎯</span>
+              <span className="text-amber-500">🎯</span>
               <div>
-                <p className="text-sm font-semibold text-amber-300 mb-1">Objectif</p>
-                <p className="text-sm text-amber-200/80 leading-relaxed">
+                <p className="text-sm font-semibold text-amber-600 mb-1">Objectif</p>
+                <p className="text-sm text-[var(--text-primary)] leading-relaxed">
                   {chapter.challenge.objective}
                 </p>
               </div>
@@ -319,7 +319,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
                 >
                   <CheckSquare
                     size={16}
-                    className={checkedSteps.includes(i) ? 'text-emerald-400' : 'text-[var(--border)]'}
+                    className={checkedSteps.includes(i) ? 'text-emerald-400' : 'text-[var(--text-secondary)]'}
                   />
                   {criterion}
                 </button>

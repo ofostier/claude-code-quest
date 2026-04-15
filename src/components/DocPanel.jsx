@@ -53,14 +53,14 @@ export default function DocPanel({ chapter, onClose }) {
             <span className="text-2xl">{chapter.icon}</span>
             <div>
               <p className="text-xs text-[var(--text-secondary)]">Documentation complète</p>
-              <h2 className="text-base font-bold text-white leading-tight">
+              <h2 className="text-base font-bold text-[var(--text-primary)] leading-tight">
                 Pièce {chapter.id} — {chapter.title}
               </h2>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-card)] transition-colors"
+            className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
             title="Fermer (Échap)"
           >
             <X size={18} />
@@ -74,13 +74,13 @@ export default function DocPanel({ chapter, onClose }) {
               remarkPlugins={[remarkGfm]}
               components={{
                 h1: ({ children }) => (
-                  <h1 className="text-xl font-bold text-white mt-6 mb-3 pb-2 border-b border-[var(--border)]">{children}</h1>
+                  <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6 mb-3 pb-2 border-b border-[var(--border)]">{children}</h1>
                 ),
                 h2: ({ children }) => (
-                  <h2 className="text-lg font-bold text-white mt-6 mb-2">{children}</h2>
+                  <h2 className="text-lg font-bold text-[var(--text-primary)] mt-6 mb-2">{children}</h2>
                 ),
                 h3: ({ children }) => (
-                  <h3 className="text-base font-semibold text-purple-300 mt-4 mb-2">{children}</h3>
+                  <h3 className="text-base font-semibold text-purple-500 mt-4 mb-2">{children}</h3>
                 ),
                 h4: ({ children }) => (
                   <h4 className="text-sm font-semibold text-[var(--text-primary)] mt-3 mb-1">{children}</h4>
@@ -109,7 +109,7 @@ export default function DocPanel({ chapter, onClose }) {
                     <code>{children}</code>
                   ),
                 pre: ({ children }) => (
-                  <pre className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg p-4 overflow-x-auto text-sm text-slate-300 font-mono leading-relaxed mb-3">
+                  <pre className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg p-4 overflow-x-auto text-sm text-[var(--text-primary)] font-mono leading-relaxed mb-3">
                     {children}
                   </pre>
                 ),
@@ -138,7 +138,7 @@ export default function DocPanel({ chapter, onClose }) {
                 ),
                 hr: () => <hr className="border-[var(--border)] my-4" />,
                 strong: ({ children }) => (
-                  <strong className="font-semibold text-white">{children}</strong>
+                  <strong className="font-semibold text-[var(--text-primary)]">{children}</strong>
                 ),
                 a: ({ href, children }) => (
                   <a href={href} target="_blank" rel="noopener noreferrer"
