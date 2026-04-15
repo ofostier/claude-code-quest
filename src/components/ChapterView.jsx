@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, BookOpen, Zap, CheckSquare, Eye } from 'lucide-react';
 import { getNextChapter } from '../data/chapters';
+import { useLang } from '../i18n/LangContext';
 import DocPanel from './DocPanel';
 
 export default function ChapterView({ chapter, isCompleted, onComplete }) {
@@ -11,7 +12,8 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
   const [showSolution, setShowSolution] = useState(false);
   const [showDoc, setShowDoc] = useState(false);
   const navigate = useNavigate();
-  const next = getNextChapter(chapter.id);
+  const { lang, t } = useLang();
+  const next = getNextChapter(chapter.id, lang);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -23,8 +25,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
     );
   };
 
-  const allStepsChecked =
-    checkedSteps.length === chapter.challenge.validation.length;
+  const allStepsChecked = checkedSteps.length === chapter.challenge.validation.length;
 
   const handleComplete = () => {
     onComplete(chapter.id);
@@ -33,19 +34,21 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
   };
 
   const tabs = [
-    { id: 'theory', label: 'Théorie', icon: BookOpen },
-    { id: 'challenge', label: 'Défi', icon: Zap },
+    { id: 'theory', label: t.chapterView.tabTheory, icon: BookOpen },
+    { id: 'challenge', label: t.chapterView.tabChallenge, icon: Zap },
   ];
+
+  const docPath = t.chapterView.docPath(lang, chapter.id, chapter.slug);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       {/* Back nav */}
       <button
         onClick={() => navigate('/')}
-        className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-white text-sm mb-6 transition-colors"
+        className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm mb-6 transition-colors"
       >
         <ArrowLeft size={16} />
-        Retour au puzzle
+        {t.chapterView.back}
       </button>
 
       {/* Chapter header */}
@@ -61,11 +64,11 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs text-[var(--text-secondary)] bg-[var(--bg-card)] px-2 py-0.5 rounded-full border border-[var(--border)]">
-                Pièce {chapter.id}/7
+                {t.chapterView.pieceLabel} {chapter.id}{t.chapterView.of}
               </span>
               {isCompleted && (
                 <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                  ✓ Complété
+                  {t.chapterView.completed}
                 </span>
               )}
             </div>
@@ -107,7 +110,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           {/* Key points */}
           <div>
             <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
-              Points clés
+              {t.chapterView.keyPoints}
             </h3>
             <ul className="space-y-2">
               {chapter.theory.keyPoints.map((point, i) => (
@@ -122,14 +125,14 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           {/* Code example */}
           <div>
             <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
-              Exemple
+              {t.chapterView.example}
             </h3>
             {chapter.theory.codeExamples ? (
               <div>
                 <div className="flex gap-1 mb-2">
                   {[
-                    { id: 'basic', label: '👶 Simple' },
-                    { id: 'advanced', label: '⚙️ Technique' },
+                    { id: 'basic', label: t.chapterView.exampleSimple },
+                    { id: 'advanced', label: t.chapterView.exampleAdvanced },
                   ].map(({ id, label }) => (
                     <button
                       key={id}
@@ -168,14 +171,12 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             <BookOpen size={16} className="text-purple-400 shrink-0" />
             <div className="text-left">
               <p className="text-xs font-medium text-[var(--text-primary)] group-hover:text-purple-400 transition-colors">
-                Documentation complète
+                {t.chapterView.docTitle}
               </p>
-              <p className="text-xs text-[var(--text-secondary)] font-mono">
-                docs/chapters/0{chapter.id}-{chapter.slug}.md
-              </p>
+              <p className="text-xs text-[var(--text-secondary)] font-mono">{docPath}</p>
             </div>
             <span className="ml-auto text-xs text-[var(--text-secondary)] group-hover:text-purple-400 transition-colors">
-              Ouvrir →
+              {t.chapterView.docOpen}
             </span>
           </button>
 
@@ -184,7 +185,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-semibold transition-colors"
           >
             <Zap size={16} />
-            Passer au défi
+            {t.chapterView.goToChallenge}
           </button>
         </div>
       )}
@@ -197,7 +198,9 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             <div className="flex items-start gap-2">
               <span className="text-amber-500">🎯</span>
               <div>
-                <p className="text-sm font-semibold text-amber-600 mb-1">Objectif</p>
+                <p className="text-sm font-semibold text-amber-600 mb-1">
+                  {t.chapterView.objective}
+                </p>
                 <p className="text-sm text-[var(--text-primary)] leading-relaxed">
                   {chapter.challenge.objective}
                 </p>
@@ -208,7 +211,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           {/* Steps */}
           <div>
             <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
-              Étapes
+              {t.chapterView.steps}
             </h3>
             <ol className="space-y-3">
               {chapter.challenge.steps.map((step, i) => (
@@ -228,7 +231,9 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
               <span>💡</span>
               <div>
                 <p className="text-xs font-semibold text-[var(--text-secondary)] mb-1">
-                  Indice — ou utilise <code className="text-purple-400">/hint</code> dans Claude Code
+                  {t.chapterView.hintLabel}{' '}
+                  <code className="text-purple-400">/hint</code>{' '}
+                  {t.chapterView.hintSuffix}
                 </p>
                 <p className="text-sm text-[var(--text-primary)] leading-relaxed">
                   {chapter.challenge.hint}
@@ -245,14 +250,12 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             <BookOpen size={16} className="text-purple-400 shrink-0" />
             <div className="text-left">
               <p className="text-xs font-medium text-[var(--text-primary)] group-hover:text-purple-400 transition-colors">
-                Documentation complète
+                {t.chapterView.docTitle}
               </p>
-              <p className="text-xs text-[var(--text-secondary)] font-mono">
-                docs/chapters/0{chapter.id}-{chapter.slug}.md
-              </p>
+              <p className="text-xs text-[var(--text-secondary)] font-mono">{docPath}</p>
             </div>
             <span className="ml-auto text-xs text-[var(--text-secondary)] group-hover:text-purple-400 transition-colors">
-              Ouvrir →
+              {t.chapterView.docOpen}
             </span>
           </button>
 
@@ -262,22 +265,22 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
               {!showSolution ? (
                 <button
                   onClick={() => setShowSolution(true)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-[var(--border)] text-sm text-[var(--text-secondary)] hover:text-white hover:border-purple-500/40 transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-[var(--border)] text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-purple-500/40 transition-all"
                 >
                   <Eye size={14} />
-                  Voir la réponse
+                  {t.chapterView.showSolution}
                 </button>
               ) : (
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-2.5 border-b border-amber-500/20">
                     <span className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
-                      <Eye size={12} /> Solution
+                      <Eye size={12} /> {t.chapterView.solution}
                     </span>
                     <button
                       onClick={() => setShowSolution(false)}
-                      className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors"
+                      className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                     >
-                      masquer
+                      {t.chapterView.hideSolution}
                     </button>
                   </div>
                   <div className="p-4 code-block rounded-none border-0">
@@ -294,16 +297,17 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                Auto-évaluation
+                {t.chapterView.selfEval}
               </h3>
               <span className="text-xs text-[var(--text-secondary)] bg-[var(--bg-card)] border border-[var(--border)] px-2 py-0.5 rounded-full">
-                sur l'honneur
+                {t.chapterView.honor}
               </span>
             </div>
             <p className="text-xs text-[var(--text-secondary)] mb-3 leading-relaxed">
-              Ces cases ne sont pas vérifiées automatiquement — coche-les uniquement si tu as
-              <strong className="text-[var(--text-primary)]"> vraiment</strong> réalisé chaque étape.
-              Pour une validation par Claude, utilise <code className="text-purple-400">/validate</code>.
+              {t.chapterView.evalDesc1}
+              <strong className="text-[var(--text-primary)]">{t.chapterView.evalDescBold}</strong>
+              {t.chapterView.evalDesc2}
+              <code className="text-purple-400">/validate</code>.
             </p>
             <div className="space-y-2">
               {chapter.challenge.validation.map((criterion, i) => (
@@ -341,22 +345,25 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             {isCompleted ? (
               <>
                 <ArrowRight size={16} />
-                {next ? `Pièce suivante : ${next.title}` : 'Retour au puzzle'}
+                {next
+                  ? `${t.chapterView.nextPiece} ${next.title}`
+                  : t.chapterView.backToPuzzle}
               </>
             ) : (
               <>
                 <CheckSquare size={16} />
                 {allStepsChecked
-                  ? `Je confirme avoir réalisé ces étapes — débloquer la pièce ${chapter.id}`
-                  : `Coche tous les critères (${checkedSteps.length}/${chapter.challenge.validation.length})`}
+                  ? `${t.chapterView.confirmLabel} ${chapter.id}`
+                  : `${t.chapterView.checkCriteria} (${checkedSteps.length}/${chapter.challenge.validation.length})`}
               </>
             )}
           </button>
 
           <p className="text-center text-xs text-[var(--text-secondary)]">
-            Utilise{' '}
-            <code className="text-purple-400">/validate</code> dans Claude Code
-            pour une validation assistée par l'IA
+            {t.chapterView.validateHint}{' '}
+            <code className="text-purple-400">/validate</code>{' '}
+            {t.chapterView.validateHintMiddle}{' '}
+            {t.chapterView.validateHintSuffix}
           </p>
         </div>
       )}

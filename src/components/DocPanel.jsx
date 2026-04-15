@@ -2,23 +2,30 @@ import { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { X, BookOpen } from 'lucide-react';
+import { useLang } from '../i18n/LangContext';
 
-// Load all chapter markdown files at build time
-const docFiles = import.meta.glob('/docs/chapters/*.md', {
+// Load all chapter markdown files at build time (both languages)
+const docFilesFR = import.meta.glob('/docs/chapters/fr/*.md', {
   query: '?raw',
   import: 'default',
   eager: true,
 });
 
-function getDoc(chapterId) {
-  const key = Object.keys(docFiles).find((k) =>
-    k.includes(`/0${chapterId}-`)
-  );
-  return key ? docFiles[key] : null;
+const docFilesEN = import.meta.glob('/docs/chapters/en/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
+function getDoc(chapterId, lang) {
+  const files = lang === 'en' ? docFilesEN : docFilesFR;
+  const key = Object.keys(files).find((k) => k.includes(`/0${chapterId}-`));
+  return key ? files[key] : null;
 }
 
 export default function DocPanel({ chapter, onClose }) {
-  const content = getDoc(chapter.id);
+  const { lang, t } = useLang();
+  const content = getDoc(chapter.id, lang);
 
   // Close on Escape key
   useEffect(() => {
@@ -30,7 +37,9 @@ export default function DocPanel({ chapter, onClose }) {
   // Prevent body scroll when panel is open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, []);
 
   return (
@@ -52,16 +61,16 @@ export default function DocPanel({ chapter, onClose }) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">{chapter.icon}</span>
             <div>
-              <p className="text-xs text-[var(--text-secondary)]">Documentation complète</p>
+              <p className="text-xs text-[var(--text-secondary)]">{t.docPanel.title}</p>
               <h2 className="text-base font-bold text-[var(--text-primary)] leading-tight">
-                Pièce {chapter.id} — {chapter.title}
+                {t.docPanel.pieceLabel} {chapter.id} — {chapter.title}
               </h2>
             </div>
           </div>
           <button
             onClick={onClose}
             className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
-            title="Fermer (Échap)"
+            title={t.docPanel.close}
           >
             <X size={18} />
           </button>
@@ -102,7 +111,7 @@ export default function DocPanel({ chapter, onClose }) {
                 ),
                 code: ({ inline, children }) =>
                   inline ? (
-                    <code className="text-purple-300 bg-purple-500/10 px-1.5 py-0.5 rounded text-xs font-mono">
+                    <code className="text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded text-xs font-mono">
                       {children}
                     </code>
                   ) : (
@@ -141,8 +150,12 @@ export default function DocPanel({ chapter, onClose }) {
                   <strong className="font-semibold text-[var(--text-primary)]">{children}</strong>
                 ),
                 a: ({ href, children }) => (
-                  <a href={href} target="_blank" rel="noopener noreferrer"
-                    className="text-purple-400 hover:text-purple-300 underline underline-offset-2">
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:text-purple-300 underline underline-offset-2"
+                  >
                     {children}
                   </a>
                 ),
@@ -153,7 +166,7 @@ export default function DocPanel({ chapter, onClose }) {
           ) : (
             <div className="text-center py-16 text-[var(--text-secondary)]">
               <BookOpen size={32} className="mx-auto mb-3 opacity-40" />
-              <p>Documentation non disponible</p>
+              <p>{t.docPanel.notAvailable}</p>
             </div>
           )}
         </div>

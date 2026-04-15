@@ -1,7 +1,9 @@
 import { Lock, CheckCircle2, ChevronRight } from 'lucide-react';
+import { useLang } from '../i18n/LangContext';
 
 export default function PuzzlePiece({ chapter, isUnlocked, isCompleted, onClick }) {
   const locked = !isUnlocked;
+  const { t } = useLang();
 
   return (
     <button
@@ -16,11 +18,7 @@ export default function PuzzlePiece({ chapter, isUnlocked, isCompleted, onClick 
           : 'border-[var(--border)] bg-[var(--bg-card)] card-hover cursor-pointer hover:border-purple-500/50',
       ].join(' ')}
       style={
-        !locked && isCompleted
-          ? { boxShadow: `0 0 15px rgba(16,185,129,0.2)` }
-          : !locked
-          ? undefined
-          : undefined
+        !locked && isCompleted ? { boxShadow: '0 0 15px rgba(16,185,129,0.2)' } : undefined
       }
     >
       {/* Piece number badge */}
@@ -38,12 +36,7 @@ export default function PuzzlePiece({ chapter, isUnlocked, isCompleted, onClick 
       </div>
 
       {/* Icon */}
-      <div
-        className={[
-          'text-3xl mb-3 transition-transform duration-200',
-          locked ? 'grayscale' : 'group-hover:scale-110',
-        ].join(' ')}
-      >
+      <div className="text-3xl mb-3 transition-transform duration-200">
         {locked ? '🔒' : chapter.icon}
       </div>
 
@@ -52,7 +45,7 @@ export default function PuzzlePiece({ chapter, isUnlocked, isCompleted, onClick 
         <h3
           className={[
             'font-bold text-base leading-tight',
-            locked ? 'text-[var(--text-secondary)]' : 'text-white',
+            locked ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]',
           ].join(' ')}
         >
           {chapter.title}
@@ -75,11 +68,15 @@ export default function PuzzlePiece({ chapter, isUnlocked, isCompleted, onClick 
             locked
               ? 'bg-[var(--border)]/30 text-[var(--text-secondary)]'
               : isCompleted
-              ? 'bg-emerald-500/20 text-emerald-400'
-              : 'bg-purple-500/20 text-purple-400',
+              ? 'bg-emerald-500/20 text-emerald-500'
+              : 'bg-purple-500/20 text-purple-500',
           ].join(' ')}
         >
-          {locked ? 'Verrouillé' : isCompleted ? 'Complété ✓' : 'Disponible'}
+          {locked
+            ? t.puzzlePiece.locked
+            : isCompleted
+            ? t.puzzlePiece.completed
+            : t.puzzlePiece.available}
         </span>
 
         {!locked && (
