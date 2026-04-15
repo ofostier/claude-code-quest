@@ -37,17 +37,34 @@ Avec MCP :   Claude ←→ tes fichiers
 
 ### Comment brancher un serveur MCP
 
-#### 1. Toujours dans `settings.json`
+#### 1. Global ou projet ?
 
-> ⚠️ `mcpServers` ne fonctionne **que** dans `.claude/settings.json`.
-> Mettre la config dans `settings.local.json` ne provoque aucune erreur
-> mais les serveurs ne sont pas chargés. C'est le piège le plus courant.
+Il existe deux endroits où configurer `mcpServers` :
+
+| Fichier | Portée | Quand l'utiliser |
+|---------|--------|-----------------|
+| `~/.claude/settings.json` | Tous tes projets | Outils du quotidien (GitHub, recherche...) |
+| `.claude/settings.json` | Ce projet uniquement | Outils spécifiques au projet (sa DB, son Jira...) |
+
+> ⚠️ `mcpServers` ne fonctionne **que** dans `settings.json` (global ou projet).
+> `settings.local.json` n'est **pas** lu pour les serveurs MCP — sans message d'erreur.
 
 ```
-.claude/
-├── settings.json        ← mcpServers ICI (obligatoire)
-└── settings.local.json  ← mcpServers ignoré dans ce fichier
+~/.claude/settings.json          ← serveurs disponibles dans TOUS les projets
+.claude/settings.json            ← serveurs disponibles dans CE projet uniquement
+.claude/settings.local.json      ← mcpServers ignoré ici
 ```
+
+#### 2. Vérifier que les serveurs sont chargés
+
+> ⚠️ `claude mcp list` affiche uniquement les serveurs **globaux** (`~/.claude/settings.json`).
+> Les serveurs **projet** (`.claude/settings.json`) ne s'y affichent pas — même s'ils fonctionnent.
+
+**La bonne méthode pour vérifier un serveur projet** : demander directement dans Claude Code après redémarrage :
+```
+Quels outils MCP as-tu disponibles dans cette session ?
+```
+Claude liste les outils de tous les serveurs chargés (globaux + projet).
 
 #### 2. Structure de base
 

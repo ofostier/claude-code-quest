@@ -300,46 +300,45 @@ cat error.log | claude -p "Analyse ces erreurs"`,
   }
 }
 
-// Ensuite dans Claude :
-// "Liste les 5 fichiers modifiés récemment"
-// "Cherche tous les fichiers avec TODO"`,
+// Redémarre Claude, puis demande :
+// "Quels outils MCP as-tu disponibles ?"
+// → Claude liste read_file, list_directory...`,
         advanced:
-`// GitHub + Brave Search
-// Fichier : .claude/settings.local.json (tokens = données perso)
+`// GitHub avec variable d'environnement (jamais le token en dur !)
+// Fichier : .claude/settings.json
 {
   "mcpServers": {
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxx" }
-    },
-    "brave-search": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
-      "env": { "BRAVE_API_KEY": "BSA_xxxx" }
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "\${GITHUB_TOKEN}"
+      }
     }
   }
 }
 
+// Dans ~/.zshrc ou ~/.bashrc :
+// export GITHUB_TOKEN="ghp_ton_token_ici"
+
 // Ensuite dans Claude :
-// "Y a-t-il des issues GitHub ouvertes liées aux hooks ?"
-// "Cherche la doc officielle de Tailwind v4"`,
+// "Y a-t-il des issues GitHub ouvertes liées aux hooks ?"`,
       },
     },
     challenge: {
-      objective: 'Configurer et utiliser au moins un serveur MCP.',
+      objective: 'Configurer un serveur MCP et prouver qu\'il est actif.',
       steps: [
-        'Ajoute le serveur `filesystem` dans `.claude/settings.json`',
+        'Ajoute le serveur `filesystem` dans `.claude/settings.json` (pas `settings.local.json`)',
         'Redémarre Claude Code (`exit` puis `claude`)',
-        'Dans un terminal externe, tape `claude mcp list` → le serveur doit apparaître',
-        'Dans Claude Code : "Quels outils MCP as-tu disponibles ?" → Claude liste `read_file`, `list_directory`...',
+        'Dans Claude Code, demande : "Quels outils MCP as-tu disponibles dans cette session ?"',
+        'Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`',
       ],
       validation: [
-        'Serveur MCP configuré dans `settings.json` ou `settings.local.json`',
-        '`claude mcp list` affiche le serveur (preuve qu\'il est chargé, pas juste configuré)',
-        'Claude confirme avoir des outils MCP quand on lui demande directement',
+        'Serveur MCP configuré dans `.claude/settings.json` (mcpServers ne fonctionne pas dans settings.local.json)',
+        'Claude Code redémarré après la modification',
+        'Demander "Quels outils MCP as-tu ?" → Claude mentionne des outils du serveur configuré',
       ],
-      hint: 'Le serveur `filesystem` est le plus simple : pas besoin de token. Il donne juste à Claude un accès étendu aux fichiers.',
+      hint: 'Si Claude ne mentionne pas d\'outils MCP, vérifie que tu as bien mis la config dans `settings.json` (pas `settings.local.json`) et redémarré Claude.',
     },
   },
   {

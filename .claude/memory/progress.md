@@ -7,15 +7,15 @@ type: project
 # Progression dans Claude Code Quest
 
 **Démarré le :** 2026-04-14
-**Niveau actuel :** Pièce 2 — Memory
+**Niveau actuel :** Pièce 6 — MCP
 
 ## Pièces débloquées
 
 - [x] Pièce 1 : CLAUDE.md (validée le 2026-04-14)
-- [x] Pièce 2 : Memory
-- [ ] Pièce 3 : Skills
-- [ ] Pièce 4 : Hooks
-- [ ] Pièce 5 : Session
+- [x] Pièce 2 : Memory (validée le 2026-04-14)
+- [x] Pièce 3 : Skills (validée le 2026-04-14)
+- [x] Pièce 4 : Hooks (validée le 2026-04-14)
+- [x] Pièce 5 : Session (validée le 2026-04-14)
 - [ ] Pièce 6 : MCP
 - [ ] Pièce 7 : Master Build
 

@@ -36,5 +36,10 @@ Consulte `.claude/memory/progress.md` pour voir où en est l'utilisateur.
 - React Router v7
 - Lucide React (icônes)
 
+
+## Mes préférences
+Toujours me parler en français
+Les commentaire de code toujours en anglais
+
 ---
 *Ce CLAUDE.md est lui-même un exemple de Pièce 1 du puzzle.*
