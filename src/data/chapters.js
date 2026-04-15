@@ -174,10 +174,10 @@ Résume ce qui est prêt et ce qui bloque.`,
     theory: {
       summary: 'Les Hooks exécutent des commandes shell automatiquement avant/après les actions de Claude.',
       keyPoints: [
-        '`settings.json` = paramètres partagés (à committer) — `settings.local.json` = paramètres personnels (à garder local)',
+        '`hooks` fonctionne dans les deux fichiers — `mcpServers` uniquement dans `settings.json`',
+        'Hooks perso (sons, logs) → `settings.local.json` | Hooks équipe + MCP → `settings.json`',
         'Événements : PreToolUse, PostToolUse, Stop, Notification',
         'Variables : $CLAUDE_TOOL_NAME, $CLAUDE_TOOL_INPUT_*',
-        'PreToolUse peut bloquer une action (code de sortie non-zéro)',
       ],
       codeExample: `{
   "hooks": {
@@ -284,8 +284,8 @@ cat error.log | claude -p "Analyse ces erreurs"`,
       keyPoints: [
         '❌ Sans MCP : Claude travaille uniquement avec tes fichiers locaux',
         '✅ Avec MCP : Claude accède à GitHub, PostgreSQL, Slack, le web...',
-        'Serveurs sans token : `filesystem`, `puppeteer` (à tester en premier)',
-        'Serveurs avec token : `github`, `postgres`, `brave-search` (dans `settings.local.json`)',
+        '⚠️ `mcpServers` fonctionne UNIQUEMENT dans `settings.json` — jamais dans `settings.local.json`',
+        'Tokens : ne jamais écrire en dur, utiliser des variables d\'environnement système',
       ],
       codeExamples: {
         basic:

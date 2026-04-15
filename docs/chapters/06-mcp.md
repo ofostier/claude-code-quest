@@ -37,35 +37,78 @@ Avec MCP :   Claude ←→ tes fichiers
 
 ### Comment brancher un serveur MCP
 
-> **Important** : contrairement aux hooks, `mcpServers` ne fonctionne **que** dans
-> `.claude/settings.json`. Le fichier `settings.local.json` n'est pas lu pour les
-> serveurs MCP. Pour les serveurs avec token, mets la config dans `settings.json`
-> mais passe le token via une variable d'environnement définie sur ton système
-> (et non écrite en dur dans le fichier).
+#### 1. Toujours dans `settings.json`
 
-Tu ajoutes une entrée dans `.claude/settings.json` :
+> ⚠️ `mcpServers` ne fonctionne **que** dans `.claude/settings.json`.
+> Mettre la config dans `settings.local.json` ne provoque aucune erreur
+> mais les serveurs ne sont pas chargés. C'est le piège le plus courant.
+
+```
+.claude/
+├── settings.json        ← mcpServers ICI (obligatoire)
+└── settings.local.json  ← mcpServers ignoré dans ce fichier
+```
+
+#### 2. Structure de base
 
 ```json
 {
   "mcpServers": {
     "nom-du-serveur": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-nom"],
-      "env": {
-        "TOKEN": "ton-token-si-necessaire"
-      }
+      "args": ["-y", "@modelcontextprotocol/server-nom"]
     }
   }
 }
 ```
 
 > **C'est quoi `npx` ?**
-> `npx` est un outil inclus avec Node.js qui télécharge et exécute un package npm
-> sans l'installer définitivement. Le `-y` accepte automatiquement l'installation.
-> C'est la façon recommandée de lancer des serveurs MCP : pas besoin d'installation
-> manuelle, la version à jour est toujours utilisée.
+> `npx` est un outil inclus avec Node.js. Il télécharge et exécute un package
+> sans l'installer de façon permanente. Le `-y` accepte automatiquement.
+> C'est la façon recommandée pour les serveurs MCP.
 
-Redémarre Claude Code après chaque modification de la config — il détecte les serveurs au démarrage uniquement.
+#### 3. Gérer les tokens sans les committer
+
+Les serveurs comme GitHub nécessitent un token. Ne jamais écrire le token
+directement dans `settings.json` (il serait commité dans git).
+
+**La bonne approche : variable d'environnement système**
+
+Dans `settings.json`, tu références la variable par son nom :
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+Et tu définis la variable une fois sur ton système (dans `~/.zshrc` ou `~/.bashrc`) :
+```bash
+export GITHUB_TOKEN="ghp_ton_token_ici"
+```
+
+Comme ça, le token n'est jamais dans un fichier commité.
+
+#### 4. Redémarrer après chaque modification
+
+Claude Code charge les serveurs MCP **au démarrage uniquement**.
+Après toute modification de `settings.json` : `exit` puis `claude`.
+
+#### 5. Vérifier que les serveurs sont chargés
+
+```bash
+claude mcp list
+```
+
+Cette commande liste les serveurs actifs. Si un serveur n'apparaît pas,
+vérifie que sa config est bien dans `settings.json` (pas `settings.local.json`).
 
 ---
 

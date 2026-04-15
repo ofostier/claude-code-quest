@@ -15,19 +15,31 @@ se déclenche automatiquement en réponse à des événements Claude Code.
 
 ### `settings.json` vs `settings.local.json`
 
-Il existe deux fichiers de configuration, et c'est important de savoir lequel utiliser :
+Claude Code utilise deux fichiers de configuration dans le dossier `.claude/` :
 
-| Fichier | Usage | Committer dans git ? |
-|---------|-------|---------------------|
-| `.claude/settings.json` | Hooks partagés + **`mcpServers`** (obligatoire pour MCP) | ✅ Oui |
-| `.claude/settings.local.json` | Hooks personnels, permissions locales | ❌ Non |
+```
+.claude/
+├── settings.json        ← partagé avec l'équipe (committer dans git)
+└── settings.local.json  ← personnel (ne jamais committer)
+```
 
-**En pratique :**
-- Un hook qui lance `prettier` sur chaque fichier modifié → `settings.json` (toute l'équipe en bénéficie)
-- Un hook qui joue un son quand Claude finit → `settings.local.json` (c'est ta préférence perso)
-- Un token d'API dans la config → `settings.local.json` (ne jamais committer un secret)
+**Ce que chaque fichier supporte :**
 
-Les deux fichiers ont exactement la même structure. Claude Code les lit tous les deux et fusionne leur contenu.
+| Fonctionnalité | `settings.json` | `settings.local.json` |
+|----------------|-----------------|----------------------|
+| `hooks` | ✅ | ✅ |
+| `mcpServers` | ✅ | ❌ **ignoré** |
+| `permissions` | ✅ | ✅ |
+
+> ⚠️ **Attention** : `mcpServers` ne fonctionne **que** dans `settings.json`.
+> Si tu mets ta config MCP dans `settings.local.json`, les serveurs ne seront
+> pas chargés — sans aucun message d'erreur. C'est un piège classique.
+
+**La règle simple :**
+- Hook personnel (son, log...) → `settings.local.json`
+- Hook d'équipe (lint, format...) → `settings.json`
+- Serveurs MCP → toujours `settings.json`
+- Tokens et secrets → jamais dans un fichier commité (utilise des variables d'environnement système)
 
 ### Les événements disponibles
 
