@@ -94,12 +94,9 @@ Tu dois voir les logs des modifications faites par Claude.
 
 ---
 
-## Tu as terminé le puzzle !
+## Tu as terminé le puzzle ! 🏆
 
-```
-🧩🧩🧩🧩🧩🧩🧩
-✅ ✅ ✅ ✅ ✅ ✅ ✅
-```
+🧩 🧩 🧩 🧩 🧩 🧩 🧩
 
 ### Ce que tu maîtrises maintenant
 
