@@ -213,11 +213,30 @@ Ce que tu peux faire ensuite :
 
 ## Défi — Pièce 6 à débloquer
 
-**Objectif** : Configurer et utiliser au moins un serveur MCP.
+**Objectif** : Configurer un serveur MCP et vérifier qu'il est bien chargé.
 
-### Option A — Filesystem (recommandé pour débuter)
+### ⚠️ Note importante sur le serveur `filesystem`
 
-Aucun compte ni token nécessaire.
+Le serveur `filesystem` est le plus simple à configurer, mais il est **difficile
+à distinguer** des outils natifs de Claude. Claude Code a déjà accès aux fichiers
+par défaut (outils `Read`, `LS`, `Bash`...) — quand tu lui demandes de lister
+des fichiers, il utilisera ses propres outils plutôt que ceux du MCP.
+
+**Comment vraiment vérifier qu'un MCP est actif :**
+
+```bash
+# Dans un terminal (pas dans Claude Code), tape :
+claude mcp list
+```
+
+Cette commande liste tous les serveurs MCP que Claude a détectés et chargés.
+Si ton serveur apparaît dans la liste → il est actif.
+
+---
+
+### Option A — Filesystem (le plus simple)
+
+Aucun compte ni token nécessaire. On utilise `claude mcp list` pour valider.
 
 1. Ajoute dans `.claude/settings.json` :
 ```json
@@ -233,21 +252,29 @@ Aucun compte ni token nécessaire.
 
 2. Redémarre Claude Code (`exit` puis `claude`)
 
-3. Teste :
+3. **Validation — dans un terminal externe** :
+   ```bash
+   claude mcp list
    ```
-   Liste les 5 fichiers modifiés le plus récemment dans ce projet
+   Tu dois voir `filesystem` dans la liste des serveurs actifs.
+
+4. Dans Claude Code, demande :
    ```
+   Quels outils MCP as-tu disponibles ?
+   ```
+   Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`.
 
-4. Claude doit répondre avec une vraie liste de fichiers — si tu vois
-   qu'il utilise un outil `list_directory` ou `search_files`, c'est que
-   le serveur MCP est actif.
+---
 
-### Option B — GitHub (si tu as un compte GitHub)
+### Option B — GitHub (démontre vraiment la puissance de MCP)
+
+GitHub est un meilleur exemple car Claude **ne peut pas** accéder à GitHub sans MCP.
+La différence est immédiate et indiscutable.
 
 1. Génère un token : GitHub → Settings → Developer settings →
    Personal access tokens → Generate new token (classic) → coche `repo`
 
-2. Ajoute dans `.claude/settings.local.json` (token = donnée personnelle) :
+2. Ajoute dans `.claude/settings.local.json` :
 ```json
 {
   "mcpServers": {
@@ -255,23 +282,28 @@ Aucun compte ni token nécessaire.
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_TOKEN": "ghp_ton_token_ici"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_ton_token_ici"
       }
     }
   }
 }
 ```
 
-3. Redémarre Claude Code et teste :
+3. Redémarre Claude Code, puis teste :
    ```
    Crée une issue GitHub intitulée "Test MCP - Pièce 6 complétée"
+   dans le repo claude-code-quest
    ```
+   Si l'issue apparaît sur GitHub → MCP fonctionne. Sans MCP, Claude
+   n'aurait aucun moyen de créer une issue.
+
+---
 
 ### Critères de validation
 
-- [ ] Au moins un serveur MCP configuré dans `settings.json` ou `settings.local.json`
-- [ ] Redémarrage effectué après configuration
-- [ ] Claude a utilisé un outil MCP (tu vois un appel d'outil dans sa réponse)
+- [ ] Serveur MCP configuré dans `settings.json` ou `settings.local.json`
+- [ ] `claude mcp list` affiche le serveur dans un terminal externe
+- [ ] Test effectué qui prouve que MCP est utilisé (et non les outils natifs)
 
 ---
 
