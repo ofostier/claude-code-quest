@@ -2,7 +2,7 @@ import { Routes, Route, useParams } from 'react-router-dom';
 import Header from './components/Header';
 import PuzzleBoard from './components/PuzzleBoard';
 import ChapterView from './components/ChapterView';
-import HallOfFame from './components/HallOfFame';
+import HallOfFamePlaceholder from './components/HallOfFamePlaceholder';
 import { useProgress } from './hooks/useProgress';
 import { getChapter } from './data/chapters';
 
@@ -71,7 +71,7 @@ export default function App() {
               />
             }
           />
-          <Route path="/hall-of-fame" element={<HallOfFame />} />
+          <Route path="/hall-of-fame" element={<HallOfFamePlaceholder />} />
         </Routes>
       </main>
     </div>
