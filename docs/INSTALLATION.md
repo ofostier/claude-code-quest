@@ -1,5 +1,19 @@
 # Installation — Claude Code Quest
 
+## Compatibilité OS
+
+| OS | Support | Notes |
+|----|---------|-------|
+| **macOS** | ✅ Complet | Terminal, VS Code, Desktop |
+| **Linux** | ✅ Complet | Terminal, VS Code |
+| **Windows** | ⚠️ Via WSL | Installe [WSL2](https://learn.microsoft.com/fr-fr/windows/wsl/install) puis utilise le terminal Ubuntu |
+
+> **Windows** : Claude Code fonctionne nativement sous Windows, mais toutes les commandes
+> shell de ce cours supposent un environnement Unix (bash/zsh). Pour une expérience
+> identique à macOS/Linux, utilise **WSL2** avec Ubuntu.
+
+---
+
 ## Prérequis
 
 | Outil | Version minimale | Vérification |

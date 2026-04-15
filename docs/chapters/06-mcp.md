@@ -35,6 +35,22 @@ Avec MCP :   Claude ←→ tes fichiers
                     ←→ ...
 ```
 
+### Compatibilité macOS / Linux / Windows
+
+| | macOS | Linux | Windows |
+|---|---|---|---|
+| **Claude Code CLI** | ✅ Terminal / VSCode | ✅ Terminal | ✅ WSL recommandé |
+| **`claude mcp add`** | ✅ identique | ✅ identique | ✅ dans WSL |
+| **`~/.claude.json`** | `/Users/<toi>/.claude.json` | `/home/<toi>/.claude.json` | `C:\Users\<toi>\.claude.json` |
+| **Variables d'env** | `~/.zshrc` | `~/.bashrc` | Paramètres système ou `$PROFILE` PowerShell |
+| **`npx`** | ✅ avec Node.js | ✅ avec Node.js | ✅ avec Node.js |
+
+> 💡 **Windows** : Claude Code fonctionne nativement, mais les commandes shell
+> des exemples supposent un environnement Unix. Sous Windows, utilise **WSL**
+> (Windows Subsystem for Linux) pour une expérience identique à macOS/Linux.
+
+---
+
 ### Comment enregistrer un serveur MCP
 
 #### La commande officielle
