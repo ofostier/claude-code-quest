@@ -280,37 +280,64 @@ cat error.log | claude -p "Analyse ces erreurs"`,
     glowColor: 'rgba(6, 182, 212, 0.4)',
     duration: '~30 min',
     theory: {
-      summary: 'Le Model Context Protocol connecte Claude à des services externes : bases de données, APIs, outils métier.',
+      summary: 'Sans MCP, Claude ne voit que tes fichiers. Avec MCP, il peut lire ta base de données, créer des issues GitHub, faire des recherches web... Chaque service se "branche" en une config JSON.',
       keyPoints: [
-        'Configuré dans `.claude/settings.json` (clé `mcpServers`)',
-        'Serveurs stdio (local) ou SSE (distant)',
-        'Registre officiel : 50+ serveurs disponibles',
-        'Créer son propre serveur avec le SDK MCP',
+        '❌ Sans MCP : Claude travaille uniquement avec tes fichiers locaux',
+        '✅ Avec MCP : Claude accède à GitHub, PostgreSQL, Slack, le web...',
+        'Serveurs sans token : `filesystem`, `puppeteer` (à tester en premier)',
+        'Serveurs avec token : `github`, `postgres`, `brave-search` (dans `settings.local.json`)',
       ],
-      codeExample: `{
+      codeExamples: {
+        basic:
+`// Filesystem — aucun token requis
+// Fichier : .claude/settings.json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}
+
+// Ensuite dans Claude :
+// "Liste les 5 fichiers modifiés récemment"
+// "Cherche tous les fichiers avec TODO"`,
+        advanced:
+`// GitHub + Brave Search
+// Fichier : .claude/settings.local.json (tokens = données perso)
+{
   "mcpServers": {
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_TOKEN": "ghp_..."
-      }
+      "env": { "GITHUB_TOKEN": "ghp_xxxx" }
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": { "BRAVE_API_KEY": "BSA_xxxx" }
     }
   }
-}`,
+}
+
+// Ensuite dans Claude :
+// "Y a-t-il des issues GitHub ouvertes liées aux hooks ?"
+// "Cherche la doc officielle de Tailwind v4"`,
+      },
     },
     challenge: {
-      objective: 'Configurer et utiliser un serveur MCP.',
+      objective: 'Configurer et utiliser au moins un serveur MCP.',
       steps: [
-        'Ajoute le serveur `filesystem` dans `.claude/settings.json`',
-        'Recharge Claude Code',
-        'Teste : "Liste les 5 fichiers modifiés le plus récemment"',
-        'Note le serveur utilisé dans ta mémoire projet',
+        'Ajoute le serveur `filesystem` dans `.claude/settings.json` (pas besoin de token)',
+        'Redémarre Claude Code (`exit` puis `claude`)',
+        'Tape : "Liste les 5 fichiers modifiés le plus récemment dans ce projet"',
+        'Claude doit utiliser un outil MCP visible dans sa réponse (ex: `list_directory`)',
       ],
       validation: [
-        'Au moins un serveur MCP configuré',
-        'Claude a utilisé un outil MCP avec succès',
-        'Description dans `.claude/memory/progress.md`',
+        'Serveur MCP présent dans `settings.json` ou `settings.local.json`',
+        'Redémarrage effectué après configuration',
+        'Claude a utilisé un outil MCP (appel d\'outil visible dans sa réponse)',
       ],
       hint: 'Le serveur `filesystem` est le plus simple : pas besoin de token. Il donne juste à Claude un accès étendu aux fichiers.',
     },

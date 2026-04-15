@@ -1,33 +1,90 @@
 # Pièce 6 — MCP : Étendre les Capacités
 
-> **Concept** : Le Model Context Protocol (MCP) est un standard ouvert qui permet
-> à Claude de se connecter à des services externes — bases de données, APIs, outils
-> métier — via des serveurs standardisés. C'est l'écosystème d'extensions de Claude.
+> **Concept** : Le Model Context Protocol (MCP) permet à Claude de se connecter
+> à des services externes. Sans MCP, Claude ne peut travailler qu'avec les fichiers
+> de ton ordinateur. Avec MCP, il peut lire ta base de données, créer des issues
+> GitHub, envoyer des messages Slack, contrôler un navigateur...
 
 ---
 
 ## Théorie
 
-### Qu'est-ce que MCP ?
+### Le problème sans MCP
 
-MCP est un protocole qui définit comment un LLM communique avec des "serveurs"
-qui exposent des outils. Un serveur MCP peut :
-- Exposer des **tools** (fonctions que Claude peut appeler)
-- Exposer des **ressources** (données que Claude peut lire)
-- Exposer des **prompts** (templates réutilisables)
+Par défaut, Claude travaille uniquement avec ce qu'il peut lire sur ton disque.
+Il ne peut pas :
+- Voir tes issues GitHub sans que tu les copie-colles
+- Interroger ta base de données directement
+- Envoyer un message sur Slack
+- Faire une recherche sur le web
 
-### Architecture MCP
+### La solution : brancher des services
+
+MCP (Model Context Protocol) est un système de "prises électriques" standardisées.
+Chaque service (GitHub, PostgreSQL, Slack...) fournit une prise MCP — un petit
+programme appelé **serveur MCP**. Tu branches ce serveur dans ta config, et Claude
+peut alors utiliser ce service directement dans la conversation.
 
 ```
-Claude Code ←→ MCP Client ←→ MCP Server ←→ Service externe
-                                 ↓
-                         (GitHub, PostgreSQL,
-                          Slack, Jira, etc.)
+Sans MCP :   Claude ←→ tes fichiers uniquement
+
+Avec MCP :   Claude ←→ tes fichiers
+                    ←→ GitHub (issues, PRs, commits)
+                    ←→ ta base de données
+                    ←→ Slack
+                    ←→ ...
 ```
 
-### Configurer un serveur MCP
+### Comment brancher un serveur MCP
 
-Dans `~/.claude/settings.json` (global) ou `.claude/settings.json` (projet) :
+Tu ajoutes une entrée dans `.claude/settings.json` (partagé avec l'équipe)
+ou `.claude/settings.local.json` (personnel, si le serveur contient un token) :
+
+```json
+{
+  "mcpServers": {
+    "nom-du-serveur": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-nom"],
+      "env": {
+        "TOKEN": "ton-token-si-necessaire"
+      }
+    }
+  }
+}
+```
+
+Redémarre Claude Code — il détecte les serveurs au démarrage.
+
+---
+
+### Exemples concrets
+
+#### 1. Filesystem — accès fichiers étendu
+*Sans token, le plus simple à tester.*
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}
+```
+
+Ce que tu peux faire ensuite :
+```
+"Liste les 5 fichiers modifiés le plus récemment"
+"Cherche tous les fichiers qui contiennent le mot TODO"
+"Montre-moi l'arborescence complète de src/"
+```
+
+---
+
+#### 2. GitHub — issues, PRs, commits
+*Nécessite un token GitHub (gratuit).*
 
 ```json
 {
@@ -36,76 +93,121 @@ Dans `~/.claude/settings.json` (global) ou `.claude/settings.json` (projet) :
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_TOKEN": "ton-token-ici"
+        "GITHUB_TOKEN": "ghp_xxxxxxxxxxxx"
       }
-    },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]
     }
   }
 }
 ```
 
-### Serveurs MCP populaires
+Créer le token : GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → coche `repo`.
 
-| Serveur | Usage |
-|---------|-------|
-| `@mcp/server-github` | Issues, PRs, commits GitHub |
-| `@mcp/server-postgres` | Requêtes SQL directes |
-| `@mcp/server-filesystem` | Accès fichiers étendu |
-| `@mcp/server-slack` | Messages, canaux Slack |
-| `@mcp/server-puppeteer` | Contrôle de navigateur |
-| `@mcp/server-memory` | Mémoire persistante externe |
-
-### Utilisation dans Claude
-
-Une fois configuré, Claude accède aux outils du serveur naturellement :
-
+Ce que tu peux faire ensuite :
 ```
-"Regarde les issues GitHub ouvertes avec le label 'bug' 
- et propose un plan de résolution"
+"Montre-moi les issues ouvertes avec le label 'bug'"
+"Crée une issue 'Améliorer le formulaire de contact'"
+"Résume les 5 derniers commits de la branche main"
+"Y a-t-il des PRs en attente de review ?"
 ```
 
-```
-"Connecte-toi à la base de données et montre-moi le schéma 
- de la table users"
-```
+---
 
-### Créer son propre serveur MCP
+#### 3. PostgreSQL — base de données
+*Nécessite une base Postgres accessible.*
 
-```typescript
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-
-const server = new Server({ name: "mon-serveur", version: "1.0.0" });
-
-server.setRequestHandler("tools/list", async () => ({
-  tools: [{
-    name: "get_meteo",
-    description: "Obtient la météo d'une ville",
-    inputSchema: {
-      type: "object",
-      properties: { ville: { type: "string" } }
+```json
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://user:password@localhost/mabase"
+      ]
     }
-  }]
-}));
-
-server.setRequestHandler("tools/call", async (req) => {
-  if (req.params.name === "get_meteo") {
-    const { ville } = req.params.arguments;
-    // ... appel API météo
-    return { content: [{ type: "text", text: `Météo à ${ville}: ☀️ 22°C` }] };
   }
-});
+}
 ```
+
+Ce que tu peux faire ensuite :
+```
+"Montre-moi le schéma de la table users"
+"Combien d'utilisateurs se sont inscrits cette semaine ?"
+"Y a-t-il des doublons d'email dans la table customers ?"
+```
+
+---
+
+#### 4. Brave Search — recherche web
+*Nécessite une clé API Brave Search (gratuit jusqu'à 2000 requêtes/mois).*
+
+```json
+{
+  "mcpServers": {
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "BSA_xxxxxxxxxxxx"
+      }
+    }
+  }
+}
+```
+
+Ce que tu peux faire ensuite :
+```
+"Cherche les dernières actualités sur React 19"
+"Trouve la documentation officielle de Tailwind v4"
+"Y a-t-il des vulnérabilités connues pour ce package npm ?"
+```
+
+---
+
+#### 5. Puppeteer — contrôle de navigateur
+*Sans token. Permet à Claude de naviguer sur le web comme un humain.*
+
+```json
+{
+  "mcpServers": {
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    }
+  }
+}
+```
+
+Ce que tu peux faire ensuite :
+```
+"Va sur http://localhost:5173 et fais une capture d'écran"
+"Teste le formulaire de contact et dis-moi s'il fonctionne"
+"Vérifie que la page /about se charge sans erreur"
+```
+
+---
+
+### Tableau récapitulatif
+
+| Serveur | Token requis ? | Usage principal |
+|---------|---------------|-----------------|
+| `server-filesystem` | ❌ Non | Explorer les fichiers |
+| `server-github` | ✅ Oui (gratuit) | Issues, PRs, commits |
+| `server-postgres` | ✅ Connexion DB | Requêtes SQL |
+| `server-brave-search` | ✅ Oui (gratuit) | Recherche web |
+| `server-puppeteer` | ❌ Non | Navigation navigateur |
+| `server-slack` | ✅ Oui | Messages, canaux |
 
 ---
 
 ## Défi — Pièce 6 à débloquer
 
-**Objectif** : Configurer et utiliser un serveur MCP.
+**Objectif** : Configurer et utiliser au moins un serveur MCP.
 
-### Option A — Serveur filesystem (facile)
+### Option A — Filesystem (recommandé pour débuter)
+
+Aucun compte ni token nécessaire.
 
 1. Ajoute dans `.claude/settings.json` :
 ```json
@@ -119,30 +221,54 @@ server.setRequestHandler("tools/call", async (req) => {
 }
 ```
 
-2. Recharge Claude Code et teste :
-   *"Liste les 5 fichiers modifiés le plus récemment dans ce projet"*
+2. Redémarre Claude Code (`exit` puis `claude`)
 
-### Option B — Serveur GitHub (intermédiaire)
+3. Teste :
+   ```
+   Liste les 5 fichiers modifiés le plus récemment dans ce projet
+   ```
 
-1. Crée un token GitHub (Settings > Developer settings > Tokens)
-2. Configure le serveur `@modelcontextprotocol/server-github`
-3. Teste : *"Crée une issue GitHub 'Premier commit' dans ce repo"*
+4. Claude doit répondre avec une vraie liste de fichiers — si tu vois
+   qu'il utilise un outil `list_directory` ou `search_files`, c'est que
+   le serveur MCP est actif.
 
-### Validation
+### Option B — GitHub (si tu as un compte GitHub)
 
-Utilise `/validate` pour vérifier.
+1. Génère un token : GitHub → Settings → Developer settings →
+   Personal access tokens → Generate new token (classic) → coche `repo`
 
-**Critères** :
-- [ ] Au moins un serveur MCP configuré dans settings.json
-- [ ] Claude a utilisé un outil MCP avec succès
-- [ ] Description du serveur ajoutée dans `.claude/memory/progress.md`
+2. Ajoute dans `.claude/settings.local.json` (token = donnée personnelle) :
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_ton_token_ici"
+      }
+    }
+  }
+}
+```
+
+3. Redémarre Claude Code et teste :
+   ```
+   Crée une issue GitHub intitulée "Test MCP - Pièce 6 complétée"
+   ```
+
+### Critères de validation
+
+- [ ] Au moins un serveur MCP configuré dans `settings.json` ou `settings.local.json`
+- [ ] Redémarrage effectué après configuration
+- [ ] Claude a utilisé un outil MCP (tu vois un appel d'outil dans sa réponse)
 
 ---
 
 ## Pour aller plus loin
 
-- [Registre officiel MCP](https://github.com/modelcontextprotocol/servers)
-- Les serveurs MCP peuvent être locaux (stdio) ou distants (SSE/HTTP)
-- Claude Code Cowork permet de partager des MCP entre équipes
+- [Registre officiel : 50+ serveurs disponibles](https://github.com/modelcontextprotocol/servers)
+- Tu peux activer plusieurs serveurs en même temps dans la même config
+- Les serveurs avec token doivent toujours aller dans `settings.local.json`
 
 **Dernière pièce** : Master Build — Assemble tout ! →
