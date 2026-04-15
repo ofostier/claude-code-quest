@@ -32,22 +32,30 @@ export default function PuzzleBoard({ isUnlocked, isCompleted, completedCount, r
           <h3 className="text-lg font-bold text-amber-300 mb-1">
             Puzzle complété !
           </h3>
-          <p className="text-sm text-amber-200/70">
+          <p className="text-sm text-amber-200/70 mb-3">
             Tu maîtrises maintenant toutes les fonctionnalités de Claude Code.
           </p>
+          <button
+            onClick={() => navigate('/hall-of-fame')}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 bg-gradient-to-r from-amber-400 to-yellow-300 px-4 py-2 rounded-lg hover:brightness-110 transition-all"
+          >
+            <Trophy size={15} />
+            Voir le Hall of Fame
+          </button>
         </div>
       )}
 
       {/* Puzzle grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+      <div className="flex flex-wrap justify-center gap-4 mb-8">
         {CHAPTERS.map((chapter) => (
-          <PuzzlePiece
-            key={chapter.id}
-            chapter={chapter}
-            isUnlocked={isUnlocked(chapter.id)}
-            isCompleted={isCompleted(chapter.id)}
-            onClick={() => navigate(`/chapter/${chapter.slug}`)}
-          />
+          <div key={chapter.id} className="w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] lg:w-[calc(25%-12px)]">
+            <PuzzlePiece
+              chapter={chapter}
+              isUnlocked={isUnlocked(chapter.id)}
+              isCompleted={isCompleted(chapter.id)}
+              onClick={() => navigate(`/chapter/${chapter.slug}`)}
+            />
+          </div>
         ))}
       </div>
 
