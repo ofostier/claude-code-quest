@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, BookOpen, Zap, CheckSquare, Eye } from 'lucide-react';
 import { getNextChapter } from '../data/chapters';
+import DocPanel from './DocPanel';
 
 export default function ChapterView({ chapter, isCompleted, onComplete }) {
   const [tab, setTab] = useState('theory');
   const [checkedSteps, setCheckedSteps] = useState([]);
   const [exampleTab, setExampleTab] = useState('basic');
   const [showSolution, setShowSolution] = useState(false);
+  const [showDoc, setShowDoc] = useState(false);
   const navigate = useNavigate();
   const next = getNextChapter(chapter.id);
 
@@ -158,15 +160,24 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             )}
           </div>
 
-          {/* Read more link */}
-          <div className="p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border)]">
-            <p className="text-xs text-[var(--text-secondary)]">
-              📖 Documentation complète :{' '}
-              <span className="font-mono text-purple-400">
+          {/* Doc link */}
+          <button
+            onClick={() => setShowDoc(true)}
+            className="w-full flex items-center gap-3 p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border)] hover:border-purple-500/40 transition-colors group"
+          >
+            <BookOpen size={16} className="text-purple-400 shrink-0" />
+            <div className="text-left">
+              <p className="text-xs font-medium text-white group-hover:text-purple-300 transition-colors">
+                Documentation complète
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] font-mono">
                 docs/chapters/0{chapter.id}-{chapter.slug}.md
-              </span>
-            </p>
-          </div>
+              </p>
+            </div>
+            <span className="ml-auto text-xs text-[var(--text-secondary)] group-hover:text-purple-400 transition-colors">
+              Ouvrir →
+            </span>
+          </button>
 
           <button
             onClick={() => setTab('challenge')}
@@ -225,6 +236,25 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
               </div>
             </div>
           </div>
+
+          {/* Doc link */}
+          <button
+            onClick={() => setShowDoc(true)}
+            className="w-full flex items-center gap-3 p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border)] hover:border-purple-500/40 transition-colors group"
+          >
+            <BookOpen size={16} className="text-purple-400 shrink-0" />
+            <div className="text-left">
+              <p className="text-xs font-medium text-white group-hover:text-purple-300 transition-colors">
+                Documentation complète
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] font-mono">
+                docs/chapters/0{chapter.id}-{chapter.slug}.md
+              </p>
+            </div>
+            <span className="ml-auto text-xs text-[var(--text-secondary)] group-hover:text-purple-400 transition-colors">
+              Ouvrir →
+            </span>
+          </button>
 
           {/* Solution */}
           {chapter.challenge.solution && (
@@ -329,6 +359,11 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             pour une validation assistée par l'IA
           </p>
         </div>
+      )}
+
+      {/* Doc panel */}
+      {showDoc && (
+        <DocPanel chapter={chapter} onClose={() => setShowDoc(false)} />
       )}
     </div>
   );
