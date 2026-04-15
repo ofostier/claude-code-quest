@@ -30,6 +30,16 @@ Il te permet de :
 ~/projet/src/CLAUDE.md       ← Instructions d'un sous-dossier (optionnel)
 ```
 
+> 💻 **Chemin selon l'OS**
+>
+> | OS | Chemin global |
+> |-----|--------------|
+> | macOS | `~/.claude/` = `/Users/<toi>/.claude/` |
+> | Linux | `~/.claude/` = `/home/<toi>/.claude/` |
+> | Windows | `%USERPROFILE%\.claude\` = `C:\Users\<toi>\.claude\` |
+>
+> Dans les exemples de cette doc, `~/` désigne toujours ton dossier utilisateur.
+
 ### Exemple concret
 
 ```markdown

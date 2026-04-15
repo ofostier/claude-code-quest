@@ -30,6 +30,16 @@ It lets you:
 ~/project/src/CLAUDE.md      ← Subdirectory instructions (optional)
 ```
 
+> 💻 **Path by OS**
+>
+> | OS | Global path |
+> |-----|------------|
+> | macOS | `~/.claude/` = `/Users/<you>/.claude/` |
+> | Linux | `~/.claude/` = `/home/<you>/.claude/` |
+> | Windows | `%USERPROFILE%\.claude\` = `C:\Users\<you>\.claude\` |
+>
+> In all examples, `~/` refers to your home directory.
+
 ### Concrete example
 
 ```markdown

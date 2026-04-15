@@ -10,6 +10,7 @@ export const CHAPTERS_CONTENT_EN = {
         'Defines conventions, stack, and behavior',
         'Hierarchy: global (~/.claude/) → project → subdirectory',
         'Can reference other files with @file.md',
+        '📍 Global path — macOS/Linux: ~/.claude/  ·  Windows: %USERPROFILE%\\.claude\\',
       ],
       codeExample: `# My Project
 
@@ -285,7 +286,7 @@ claude mcp add github -- npx -y @modelcontextprotocol/server-github
         '"What MCP tools do you have?" → Claude mentions `read_file`, `list_directory`, `search_files`...',
         'Claude listed the .jsx files via MCP (not just with its native tools)',
       ],
-      hint: 'The `claude mcp add` command writes to `~/.claude.json`. It\'s the only reliable method — manually editing settings.json doesn\'t work with the current CLI.',
+      hint: 'The `claude mcp add` command writes to `~/.claude.json` (macOS/Linux) or `%USERPROFILE%\\.claude.json` (Windows). It\'s the only reliable method — manually editing settings.json doesn\'t work with the current CLI.',
     },
   },
 

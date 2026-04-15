@@ -42,11 +42,17 @@ claude mcp get <name>
 
 ### OS Compatibility
 
-| OS | Filesystem server | Notes |
-|----|------------------|-------|
-| macOS | ✅ `npx -y @modelcontextprotocol/server-filesystem .` | Recommended |
-| Linux | ✅ same command | Works identically |
-| Windows | ✅ `npx -y @modelcontextprotocol/server-filesystem .` | WSL2 recommended |
+| | macOS | Linux | Windows |
+|---|---|---|---|
+| **Claude Code CLI** | ✅ Terminal / VSCode | ✅ Terminal | ✅ WSL recommended |
+| **`claude mcp add`** | ✅ identical | ✅ identical | ✅ in WSL |
+| **`~/.claude.json`** | `/Users/<you>/.claude.json` | `/home/<you>/.claude.json` | `C:\Users\<you>\.claude.json` |
+| **Env variables** | `~/.zshrc` | `~/.bashrc` | System settings or `$PROFILE` PowerShell |
+| **`npx`** | ✅ with Node.js | ✅ with Node.js | ✅ with Node.js |
+
+> 💡 **Windows**: Claude Code works natively, but the shell commands in examples
+> assume a Unix environment. On Windows, use **WSL** (Windows Subsystem for Linux)
+> for an experience identical to macOS/Linux.
 
 ### Example: Filesystem server (no token required)
 
