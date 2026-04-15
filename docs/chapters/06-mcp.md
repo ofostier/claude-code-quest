@@ -120,12 +120,14 @@ Après toute modification de `settings.json` : `exit` puis `claude`.
 
 #### 5. Vérifier que les serveurs sont chargés
 
-```bash
-claude mcp list
+**Dans Claude Code CLI** (terminal), demande directement après redémarrage :
 ```
+Quels outils MCP as-tu disponibles dans cette session ?
+```
+Claude liste les outils de tous les serveurs actifs (globaux + projet).
 
-Cette commande liste les serveurs actifs. Si un serveur n'apparaît pas,
-vérifie que sa config est bien dans `settings.json` (pas `settings.local.json`).
+> 💡 `claude mcp list` n'affiche que les serveurs **globaux** (`~/.claude/settings.json`).
+> Les serveurs projet (`.claude/settings.json`) ne s'y affichent pas — même s'ils fonctionnent.
 
 ---
 
@@ -278,30 +280,24 @@ Ce que tu peux faire ensuite :
 
 ## Défi — Pièce 6 à débloquer
 
-**Objectif** : Configurer un serveur MCP et vérifier qu'il est bien chargé.
+**Objectif** : Configurer un serveur MCP et prouver qu'il est actif dans une session.
 
-### ⚠️ Note importante sur le serveur `filesystem`
+### ⚠️ Important : Claude Code CLI uniquement
 
-Le serveur `filesystem` est le plus simple à configurer, mais il est **difficile
-à distinguer** des outils natifs de Claude. Claude Code a déjà accès aux fichiers
-par défaut (outils `Read`, `LS`, `Bash`...) — quand tu lui demandes de lister
-des fichiers, il utilisera ses propres outils plutôt que ceux du MCP.
+La config MCP dans `.claude/settings.json` **ne fonctionne que dans le Claude Code CLI**
+(terminal). Elle n'est pas lue par l'extension VSCode, ni par claude.ai.
 
-**Comment vraiment vérifier qu'un MCP est actif :**
-
+Pour tester MCP correctement, ouvre un **vrai terminal** et lance :
 ```bash
-# Dans un terminal (pas dans Claude Code), tape :
-claude mcp list
+cd /ton/projet
+claude
 ```
-
-Cette commande liste tous les serveurs MCP que Claude a détectés et chargés.
-Si ton serveur apparaît dans la liste → il est actif.
 
 ---
 
 ### Option A — Filesystem (le plus simple)
 
-Aucun compte ni token nécessaire. On utilise `claude mcp list` pour valider.
+Aucun compte ni token nécessaire.
 
 1. Ajoute dans `.claude/settings.json` :
 ```json
@@ -315,17 +311,11 @@ Aucun compte ni token nécessaire. On utilise `claude mcp list` pour valider.
 }
 ```
 
-2. Redémarre Claude Code (`exit` puis `claude`)
+2. Redémarre Claude Code (`exit` puis `claude` dans le terminal)
 
-3. **Validation — dans un terminal externe** :
-   ```bash
-   claude mcp list
+3. Dans Claude Code, demande :
    ```
-   Tu dois voir `filesystem` dans la liste des serveurs actifs.
-
-4. Dans Claude Code, demande :
-   ```
-   Quels outils MCP as-tu disponibles ?
+   Quels outils MCP as-tu disponibles dans cette session ?
    ```
    Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`.
 
@@ -339,7 +329,7 @@ La différence est immédiate et indiscutable.
 1. Génère un token : GitHub → Settings → Developer settings →
    Personal access tokens → Generate new token (classic) → coche `repo`
 
-2. Ajoute dans `.claude/settings.local.json` :
+2. Ajoute dans `.claude/settings.json` (⚠️ **pas** `settings.local.json` — `mcpServers` n'y fonctionne pas) :
 ```json
 {
   "mcpServers": {
@@ -366,9 +356,9 @@ La différence est immédiate et indiscutable.
 
 ### Critères de validation
 
-- [ ] Serveur MCP configuré dans `settings.json` ou `settings.local.json`
-- [ ] `claude mcp list` affiche le serveur dans un terminal externe
-- [ ] Test effectué qui prouve que MCP est utilisé (et non les outils natifs)
+- [ ] Serveur MCP configuré dans `.claude/settings.json` (jamais `settings.local.json`)
+- [ ] Claude Code CLI redémarré après la modification
+- [ ] Demander "Quels outils MCP as-tu ?" → Claude mentionne les outils du serveur
 
 ---
 
@@ -376,6 +366,6 @@ La différence est immédiate et indiscutable.
 
 - [Registre officiel : 50+ serveurs disponibles](https://github.com/modelcontextprotocol/servers)
 - Tu peux activer plusieurs serveurs en même temps dans la même config
-- Les serveurs avec token doivent toujours aller dans `settings.local.json`
+- Les serveurs avec token : place le token dans une variable d'environnement (`~/.zshrc`), pas en dur dans le fichier
 
 **Dernière pièce** : Master Build — Assemble tout ! →
