@@ -85,7 +85,7 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
               'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all',
               tab === id
                 ? 'tab-active border-purple-500/50'
-                : 'border-transparent text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-card)]',
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]',
             ].join(' ')}
           >
             <Icon size={14} />
