@@ -280,65 +280,56 @@ cat error.log | claude -p "Analyse ces erreurs"`,
     glowColor: 'rgba(6, 182, 212, 0.4)',
     duration: '~30 min',
     theory: {
-      summary: 'Sans MCP, Claude ne voit que tes fichiers. Avec MCP, il peut lire ta base de données, créer des issues GitHub, faire des recherches web... Chaque service se "branche" en une config JSON.',
+      summary: 'Sans MCP, Claude ne voit que tes fichiers. Avec MCP, il peut lire ta base de données, créer des issues GitHub, faire des recherches web... Chaque service se "branche" avec une commande.',
       keyPoints: [
         '❌ Sans MCP : Claude travaille uniquement avec tes fichiers locaux',
         '✅ Avec MCP : Claude accède à GitHub, PostgreSQL, Slack, le web...',
-        '⚠️ `mcpServers` fonctionne UNIQUEMENT dans `settings.json` — jamais dans `settings.local.json`',
-        'Tokens : ne jamais écrire en dur, utiliser des variables d\'environnement système',
+        '`claude mcp add <nom> -- <commande>` — la méthode officielle qui fonctionne',
+        '`claude mcp list` pour voir les serveurs actifs · `claude mcp remove <nom>` pour supprimer',
       ],
       codeExamples: {
         basic:
-`// Filesystem — aucun token requis
-// Fichier : .claude/settings.json
-{
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
-    }
-  }
-}
+`# Filesystem — aucun token requis
+# Dans un terminal, depuis le projet :
+claude mcp add filesystem -- \\
+  npx -y @modelcontextprotocol/server-filesystem .
 
-// Redémarre Claude, puis demande :
-// "Quels outils MCP as-tu disponibles ?"
-// → Claude liste read_file, list_directory...`,
+# Vérifier :
+claude mcp list
+
+# Redémarre Claude, puis demande :
+# "Quels outils MCP as-tu disponibles ?"
+# → Claude liste read_file, list_directory...`,
         advanced:
-`// GitHub avec variable d'environnement (jamais le token en dur !)
-// Fichier : .claude/settings.json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "\${GITHUB_TOKEN}"
-      }
-    }
-  }
-}
+`# GitHub — avec token d'accès
+claude mcp add github \\
+  --env GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxx -- \\
+  npx -y @modelcontextprotocol/server-github
 
-// Dans ~/.zshrc ou ~/.bashrc :
-// export GITHUB_TOKEN="ghp_ton_token_ici"
+# Ou avec variable d'environnement système (plus sûr) :
+# Dans ~/.zshrc : export GITHUB_TOKEN="ghp_xxx"
+# Puis :
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
 
-// Ensuite dans Claude :
-// "Y a-t-il des issues GitHub ouvertes liées aux hooks ?"`,
+# Dans Claude après redémarrage :
+# "Y a-t-il des issues GitHub ouvertes ?"
+# "Crée une issue 'Test MCP'"`,
       },
     },
     challenge: {
-      objective: 'Configurer un serveur MCP et prouver qu\'il est actif.',
+      objective: 'Enregistrer un serveur MCP et prouver qu\'il est actif dans une session.',
       steps: [
-        'Ajoute le serveur `filesystem` dans `.claude/settings.json` (pas `settings.local.json`)',
+        'Dans un terminal, depuis le projet : `claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .`',
+        'Vérifie l\'enregistrement : `claude mcp list` → `filesystem` doit apparaître',
         'Redémarre Claude Code (`exit` puis `claude`)',
         'Dans Claude Code, demande : "Quels outils MCP as-tu disponibles dans cette session ?"',
-        'Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`',
       ],
       validation: [
-        'Serveur MCP configuré dans `.claude/settings.json` (mcpServers ne fonctionne pas dans settings.local.json)',
-        'Claude Code redémarré après la modification',
-        'Demander "Quels outils MCP as-tu ?" → Claude mentionne des outils du serveur configuré',
+        '`claude mcp list` affiche le serveur `filesystem`',
+        'Claude Code redémarré après l\'enregistrement',
+        'Demander "Quels outils MCP as-tu ?" → Claude mentionne `read_file`, `list_directory`...',
       ],
-      hint: 'Si Claude ne mentionne pas d\'outils MCP, vérifie que tu as bien mis la config dans `settings.json` (pas `settings.local.json`) et redémarré Claude.',
+      hint: 'La commande `claude mcp add` écrit dans `~/.claude.json`. C\'est la seule méthode fiable — éditer settings.json manuellement ne fonctionne pas avec le CLI actuel.',
     },
   },
   {

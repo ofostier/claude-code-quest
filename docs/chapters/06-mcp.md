@@ -22,8 +22,8 @@ Il ne peut pas :
 
 MCP (Model Context Protocol) est un système de "prises électriques" standardisées.
 Chaque service (GitHub, PostgreSQL, Slack...) fournit une prise MCP — un petit
-programme appelé **serveur MCP**. Tu branches ce serveur dans ta config, et Claude
-peut alors utiliser ce service directement dans la conversation.
+programme appelé **serveur MCP**. Tu enregistres ce serveur avec une commande,
+et Claude peut alors utiliser ce service directement dans la conversation.
 
 ```
 Sans MCP :   Claude ←→ tes fichiers uniquement
@@ -35,99 +35,81 @@ Avec MCP :   Claude ←→ tes fichiers
                     ←→ ...
 ```
 
-### Comment brancher un serveur MCP
+### Comment enregistrer un serveur MCP
 
-#### 1. Global ou projet ?
+#### La commande officielle
 
-Il existe deux endroits où configurer `mcpServers` :
-
-| Fichier | Portée | Quand l'utiliser |
-|---------|--------|-----------------|
-| `~/.claude/settings.json` | Tous tes projets | Outils du quotidien (GitHub, recherche...) |
-| `.claude/settings.json` | Ce projet uniquement | Outils spécifiques au projet (sa DB, son Jira...) |
-
-> ⚠️ `mcpServers` ne fonctionne **que** dans `settings.json` (global ou projet).
-> `settings.local.json` n'est **pas** lu pour les serveurs MCP — sans message d'erreur.
-
-```
-~/.claude/settings.json          ← serveurs disponibles dans TOUS les projets
-.claude/settings.json            ← serveurs disponibles dans CE projet uniquement
-.claude/settings.local.json      ← mcpServers ignoré ici
-```
-
-#### 2. Vérifier que les serveurs sont chargés
-
-> ⚠️ `claude mcp list` affiche uniquement les serveurs **globaux** (`~/.claude/settings.json`).
-> Les serveurs **projet** (`.claude/settings.json`) ne s'y affichent pas — même s'ils fonctionnent.
-
-**La bonne méthode pour vérifier un serveur projet** : demander directement dans Claude Code après redémarrage :
-```
-Quels outils MCP as-tu disponibles dans cette session ?
-```
-Claude liste les outils de tous les serveurs chargés (globaux + projet).
-
-#### 2. Structure de base
-
-```json
-{
-  "mcpServers": {
-    "nom-du-serveur": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-nom"]
-    }
-  }
-}
-```
-
-> **C'est quoi `npx` ?**
-> `npx` est un outil inclus avec Node.js. Il télécharge et exécute un package
-> sans l'installer de façon permanente. Le `-y` accepte automatiquement.
-> C'est la façon recommandée pour les serveurs MCP.
-
-#### 3. Gérer les tokens sans les committer
-
-Les serveurs comme GitHub nécessitent un token. Ne jamais écrire le token
-directement dans `settings.json` (il serait commité dans git).
-
-**La bonne approche : variable d'environnement système**
-
-Dans `settings.json`, tu références la variable par son nom :
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
-      }
-    }
-  }
-}
-```
-
-Et tu définis la variable une fois sur ton système (dans `~/.zshrc` ou `~/.bashrc`) :
 ```bash
-export GITHUB_TOKEN="ghp_ton_token_ici"
+claude mcp add <nom> -- <commande> <args>
 ```
 
-Comme ça, le token n'est jamais dans un fichier commité.
+Claude Code écrit la config dans `~/.claude.json` sous ton profil de projet.
+C'est l'**unique méthode fiable** — éditer `settings.json` manuellement ne fonctionne pas.
 
-#### 4. Redémarrer après chaque modification
+#### Portée : projet ou global ?
+
+Par défaut, `claude mcp add` enregistre le serveur pour le **projet courant** uniquement.
+
+```bash
+# Projet courant uniquement (défaut)
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .
+
+# Disponible dans tous tes projets
+claude mcp add --scope global filesystem -- npx -y @modelcontextprotocol/server-filesystem .
+```
+
+#### Vérifier les serveurs enregistrés
+
+```bash
+claude mcp list
+```
+
+Cette commande liste tous les serveurs actifs pour le projet courant.
+
+#### Supprimer un serveur
+
+```bash
+claude mcp remove filesystem
+```
+
+#### Redémarrer après ajout
 
 Claude Code charge les serveurs MCP **au démarrage uniquement**.
-Après toute modification de `settings.json` : `exit` puis `claude`.
+Après `claude mcp add` : `exit` puis `claude` pour recharger.
 
-#### 5. Vérifier que les serveurs sont chargés
+#### Vérifier dans une session
 
-**Dans Claude Code CLI** (terminal), demande directement après redémarrage :
+Après redémarrage, demande directement dans Claude Code :
 ```
 Quels outils MCP as-tu disponibles dans cette session ?
 ```
-Claude liste les outils de tous les serveurs actifs (globaux + projet).
+Claude liste tous les outils des serveurs actifs.
 
-> 💡 `claude mcp list` n'affiche que les serveurs **globaux** (`~/.claude/settings.json`).
-> Les serveurs projet (`.claude/settings.json`) ne s'y affichent pas — même s'ils fonctionnent.
+---
+
+### Gérer les tokens
+
+Les serveurs comme GitHub nécessitent un token d'accès. Deux approches :
+
+**Option 1 — Passer le token via `--env`** (stocké dans `~/.claude.json`) :
+```bash
+claude mcp add github --env GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxx -- \
+  npx -y @modelcontextprotocol/server-github
+```
+
+**Option 2 — Variable d'environnement système** (recommandé — le token reste hors de `~/.claude.json`) :
+```bash
+# Dans ~/.zshrc :
+export GITHUB_TOKEN="ghp_ton_token_ici"
+
+# Puis :
+source ~/.zshrc
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+```
+
+> ⚠️ **Ne jamais commiter un token.** `~/.claude.json` n'est pas suivi par git,
+> mais si tu partages ta machine ou sauvegardes ce fichier, le token est exposé.
+> La variable d'environnement système est la méthode la plus sûre.
 
 ---
 
@@ -136,15 +118,8 @@ Claude liste les outils de tous les serveurs actifs (globaux + projet).
 #### 1. Filesystem — accès fichiers étendu
 *Sans token, le plus simple à tester.*
 
-```json
-{
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
-    }
-  }
-}
+```bash
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .
 ```
 
 Ce que tu peux faire ensuite :
@@ -157,20 +132,11 @@ Ce que tu peux faire ensuite :
 ---
 
 #### 2. GitHub — issues, PRs, commits
-*Nécessite un token GitHub (gratuit). Package archivé mais fonctionnel.*
+*Nécessite un token GitHub (gratuit).*
 
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxxxxxxxxxx"
-      }
-    }
-  }
-}
+```bash
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+# Puis dans la session : définir GITHUB_PERSONAL_ACCESS_TOKEN
 ```
 
 Créer le token : GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → coche `repo`.
@@ -180,118 +146,63 @@ Ce que tu peux faire ensuite :
 "Montre-moi les issues ouvertes avec le label 'bug'"
 "Crée une issue 'Améliorer le formulaire de contact'"
 "Résume les 5 derniers commits de la branche main"
-"Y a-t-il des PRs en attente de review ?"
 ```
 
 ---
 
 #### 3. PostgreSQL — base de données
-*Nécessite une base Postgres accessible.*
-
-```json
-{
-  "mcpServers": {
-    "postgres": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-postgres",
-        "postgresql://user:password@localhost/mabase"
-      ]
-    }
-  }
-}
-```
-
-Ce que tu peux faire ensuite :
-```
-"Montre-moi le schéma de la table users"
-"Combien d'utilisateurs se sont inscrits cette semaine ?"
-"Y a-t-il des doublons d'email dans la table customers ?"
+```bash
+claude mcp add postgres -- npx -y @modelcontextprotocol/server-postgres \
+  postgresql://user:password@localhost/mabase
 ```
 
 ---
 
 #### 4. Brave Search — recherche web
-*Nécessite une clé API Brave Search (gratuit jusqu'à 2000 requêtes/mois).*
-
-```json
-{
-  "mcpServers": {
-    "brave-search": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
-      "env": {
-        "BRAVE_API_KEY": "BSA_xxxxxxxxxxxx"
-      }
-    }
-  }
-}
-```
-
-Ce que tu peux faire ensuite :
-```
-"Cherche les dernières actualités sur React 19"
-"Trouve la documentation officielle de Tailwind v4"
-"Y a-t-il des vulnérabilités connues pour ce package npm ?"
+```bash
+claude mcp add brave-search --env BRAVE_API_KEY=BSA_xxx -- \
+  npx -y @modelcontextprotocol/server-brave-search
 ```
 
 ---
 
 #### 5. Puppeteer — contrôle de navigateur
-*Sans token. Permet à Claude de naviguer sur le web comme un humain.*
-
-```json
-{
-  "mcpServers": {
-    "puppeteer": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
-    }
-  }
-}
+```bash
+claude mcp add puppeteer -- npx -y @modelcontextprotocol/server-puppeteer
 ```
 
-Ce que tu peux faire ensuite :
 ```
 "Va sur http://localhost:5173 et fais une capture d'écran"
 "Teste le formulaire de contact et dis-moi s'il fonctionne"
-"Vérifie que la page /about se charge sans erreur"
 ```
 
 ---
 
 ### Tableau récapitulatif
 
-| Serveur | Token requis ? | Usage principal | Statut |
-|---------|---------------|-----------------|--------|
-| `server-filesystem` | ❌ Non | Explorer les fichiers | ✅ Actif |
-| `server-github` | ✅ `GITHUB_PERSONAL_ACCESS_TOKEN` | Issues, PRs, commits | ⚠️ Archivé* |
-| `server-postgres` | ✅ Connection string | Requêtes SQL | ⚠️ Archivé* |
-| `server-brave-search` | ✅ `BRAVE_API_KEY` | Recherche web | ⚠️ Archivé* |
-| `server-puppeteer` | ❌ Non | Navigation navigateur | ⚠️ Archivé* |
-| `server-slack` | ✅ Oui | Messages, canaux | ⚠️ Archivé* |
+| Serveur | Token requis ? | Commande `claude mcp add` |
+|---------|---------------|--------------------------|
+| `server-filesystem` | ❌ Non | `claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .` |
+| `server-github` | ✅ `GITHUB_PERSONAL_ACCESS_TOKEN` | `claude mcp add github -- npx -y @modelcontextprotocol/server-github` |
+| `server-postgres` | ✅ Connection string | `claude mcp add postgres -- npx -y @modelcontextprotocol/server-postgres <url>` |
+| `server-brave-search` | ✅ `BRAVE_API_KEY` | `claude mcp add brave-search -- npx -y @modelcontextprotocol/server-brave-search` |
+| `server-puppeteer` | ❌ Non | `claude mcp add puppeteer -- npx -y @modelcontextprotocol/server-puppeteer` |
 
-> *Archivé = le package npm fonctionne toujours mais n'est plus activement maintenu
-> par l'équipe MCP. Pour des alternatives maintenues, voir le
-> [registre officiel](https://github.com/modelcontextprotocol/servers).
+> Ces packages npm sont archivés mais fonctionnels. Pour des alternatives maintenues,
+> voir le [registre officiel](https://github.com/modelcontextprotocol/servers).
 
 ---
 
 ## Défi — Pièce 6 à débloquer
 
-**Objectif** : Configurer un serveur MCP et prouver qu'il est actif dans une session.
+**Objectif** : Enregistrer un serveur MCP et prouver qu'il est actif dans une session.
 
 ### ⚠️ Important : Claude Code CLI uniquement
 
-La config MCP dans `.claude/settings.json` **ne fonctionne que dans le Claude Code CLI**
-(terminal). Elle n'est pas lue par l'extension VSCode, ni par claude.ai.
+La commande `claude mcp add` fonctionne dans le **Claude Code CLI** (terminal).
+Elle ne s'applique pas à l'extension VSCode ni à claude.ai.
 
-Pour tester MCP correctement, ouvre un **vrai terminal** et lance :
-```bash
-cd /ton/projet
-claude
-```
+Pour tester MCP, ouvre un terminal et lance `claude` depuis le projet.
 
 ---
 
@@ -299,25 +210,24 @@ claude
 
 Aucun compte ni token nécessaire.
 
-1. Ajoute dans `.claude/settings.json` :
-```json
-{
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
-    }
-  }
-}
+1. Dans un terminal, depuis le projet :
+```bash
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .
 ```
 
-2. Redémarre Claude Code (`exit` puis `claude` dans le terminal)
+2. Vérifie l'enregistrement :
+```bash
+claude mcp list
+```
+Tu dois voir `filesystem` dans la liste.
 
-3. Dans Claude Code, demande :
-   ```
-   Quels outils MCP as-tu disponibles dans cette session ?
-   ```
-   Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`.
+3. Redémarre Claude Code (`exit` puis `claude`)
+
+4. Dans Claude Code, demande :
+```
+Quels outils MCP as-tu disponibles dans cette session ?
+```
+Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`.
 
 ---
 
@@ -329,35 +239,26 @@ La différence est immédiate et indiscutable.
 1. Génère un token : GitHub → Settings → Developer settings →
    Personal access tokens → Generate new token (classic) → coche `repo`
 
-2. Ajoute dans `.claude/settings.json` (⚠️ **pas** `settings.local.json` — `mcpServers` n'y fonctionne pas) :
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_ton_token_ici"
-      }
-    }
-  }
-}
+2. Ajoute le serveur avec le token :
+```bash
+claude mcp add github --env GITHUB_PERSONAL_ACCESS_TOKEN=ghp_ton_token -- \
+  npx -y @modelcontextprotocol/server-github
 ```
 
 3. Redémarre Claude Code, puis teste :
-   ```
-   Crée une issue GitHub intitulée "Test MCP - Pièce 6 complétée"
-   dans le repo claude-code-quest
-   ```
-   Si l'issue apparaît sur GitHub → MCP fonctionne. Sans MCP, Claude
-   n'aurait aucun moyen de créer une issue.
+```
+Crée une issue GitHub intitulée "Test MCP - Pièce 6 complétée"
+dans le repo claude-code-quest
+```
+Si l'issue apparaît sur GitHub → MCP fonctionne.
 
 ---
 
 ### Critères de validation
 
-- [ ] Serveur MCP configuré dans `.claude/settings.json` (jamais `settings.local.json`)
-- [ ] Claude Code CLI redémarré après la modification
+- [ ] `claude mcp add` exécuté avec succès
+- [ ] `claude mcp list` affiche le serveur
+- [ ] Claude Code redémarré après l'enregistrement
 - [ ] Demander "Quels outils MCP as-tu ?" → Claude mentionne les outils du serveur
 
 ---
@@ -365,7 +266,8 @@ La différence est immédiate et indiscutable.
 ## Pour aller plus loin
 
 - [Registre officiel : 50+ serveurs disponibles](https://github.com/modelcontextprotocol/servers)
-- Tu peux activer plusieurs serveurs en même temps dans la même config
-- Les serveurs avec token : place le token dans une variable d'environnement (`~/.zshrc`), pas en dur dans le fichier
+- Tu peux activer plusieurs serveurs en même temps
+- `claude mcp remove <nom>` pour désactiver un serveur
+- `claude mcp get <nom>` pour voir la config d'un serveur
 
 **Dernière pièce** : Master Build — Assemble tout ! →
