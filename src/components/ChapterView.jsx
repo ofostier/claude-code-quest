@@ -137,8 +137,8 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
                       className={[
                         'px-3 py-1 rounded-md text-xs font-medium border transition-all',
                         exampleTab === id
-                          ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
-                          : 'border-[var(--border)] text-[var(--text-secondary)] hover:text-white',
+                          ? 'bg-purple-500/20 border-purple-500/50 text-[var(--accent)]'
+                          : 'border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
                       ].join(' ')}
                     >
                       {label}
