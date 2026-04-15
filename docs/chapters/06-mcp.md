@@ -37,8 +37,13 @@ Avec MCP :   Claude ←→ tes fichiers
 
 ### Comment brancher un serveur MCP
 
-Tu ajoutes une entrée dans `.claude/settings.json` (partagé avec l'équipe)
-ou `.claude/settings.local.json` (personnel, si le serveur contient un token) :
+> **Important** : contrairement aux hooks, `mcpServers` ne fonctionne **que** dans
+> `.claude/settings.json`. Le fichier `settings.local.json` n'est pas lu pour les
+> serveurs MCP. Pour les serveurs avec token, mets la config dans `settings.json`
+> mais passe le token via une variable d'environnement définie sur ton système
+> (et non écrite en dur dans le fichier).
+
+Tu ajoutes une entrée dans `.claude/settings.json` :
 
 ```json
 {

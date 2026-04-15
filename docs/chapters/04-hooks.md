@@ -19,8 +19,8 @@ Il existe deux fichiers de configuration, et c'est important de savoir lequel ut
 
 | Fichier | Usage | Committer dans git ? |
 |---------|-------|---------------------|
-| `.claude/settings.json` | Paramètres **partagés** avec l'équipe (conventions, hooks de projet) | ✅ Oui |
-| `.claude/settings.local.json` | Paramètres **personnels** (tokens, préférences locales, hooks perso) | ❌ Non |
+| `.claude/settings.json` | Hooks partagés + **`mcpServers`** (obligatoire pour MCP) | ✅ Oui |
+| `.claude/settings.local.json` | Hooks personnels, permissions locales | ❌ Non |
 
 **En pratique :**
 - Un hook qui lance `prettier` sur chaque fichier modifié → `settings.json` (toute l'équipe en bénéficie)
