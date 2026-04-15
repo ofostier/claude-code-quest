@@ -311,7 +311,7 @@ cat error.log | claude -p "Analyse ces erreurs"`,
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_TOKEN": "ghp_xxxx" }
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxx" }
     },
     "brave-search": {
       "command": "npx",

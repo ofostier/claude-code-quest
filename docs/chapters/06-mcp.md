@@ -54,7 +54,13 @@ ou `.claude/settings.local.json` (personnel, si le serveur contient un token) :
 }
 ```
 
-Redémarre Claude Code — il détecte les serveurs au démarrage.
+> **C'est quoi `npx` ?**
+> `npx` est un outil inclus avec Node.js qui télécharge et exécute un package npm
+> sans l'installer définitivement. Le `-y` accepte automatiquement l'installation.
+> C'est la façon recommandée de lancer des serveurs MCP : pas besoin d'installation
+> manuelle, la version à jour est toujours utilisée.
+
+Redémarre Claude Code après chaque modification de la config — il détecte les serveurs au démarrage uniquement.
 
 ---
 
@@ -84,7 +90,7 @@ Ce que tu peux faire ensuite :
 ---
 
 #### 2. GitHub — issues, PRs, commits
-*Nécessite un token GitHub (gratuit).*
+*Nécessite un token GitHub (gratuit). Package archivé mais fonctionnel.*
 
 ```json
 {
@@ -93,7 +99,7 @@ Ce que tu peux faire ensuite :
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_TOKEN": "ghp_xxxxxxxxxxxx"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxxxxxxxxxx"
       }
     }
   }
@@ -190,14 +196,18 @@ Ce que tu peux faire ensuite :
 
 ### Tableau récapitulatif
 
-| Serveur | Token requis ? | Usage principal |
-|---------|---------------|-----------------|
-| `server-filesystem` | ❌ Non | Explorer les fichiers |
-| `server-github` | ✅ Oui (gratuit) | Issues, PRs, commits |
-| `server-postgres` | ✅ Connexion DB | Requêtes SQL |
-| `server-brave-search` | ✅ Oui (gratuit) | Recherche web |
-| `server-puppeteer` | ❌ Non | Navigation navigateur |
-| `server-slack` | ✅ Oui | Messages, canaux |
+| Serveur | Token requis ? | Usage principal | Statut |
+|---------|---------------|-----------------|--------|
+| `server-filesystem` | ❌ Non | Explorer les fichiers | ✅ Actif |
+| `server-github` | ✅ `GITHUB_PERSONAL_ACCESS_TOKEN` | Issues, PRs, commits | ⚠️ Archivé* |
+| `server-postgres` | ✅ Connection string | Requêtes SQL | ⚠️ Archivé* |
+| `server-brave-search` | ✅ `BRAVE_API_KEY` | Recherche web | ⚠️ Archivé* |
+| `server-puppeteer` | ❌ Non | Navigation navigateur | ⚠️ Archivé* |
+| `server-slack` | ✅ Oui | Messages, canaux | ⚠️ Archivé* |
+
+> *Archivé = le package npm fonctionne toujours mais n'est plus activement maintenu
+> par l'équipe MCP. Pour des alternatives maintenues, voir le
+> [registre officiel](https://github.com/modelcontextprotocol/servers).
 
 ---
 
