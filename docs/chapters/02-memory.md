@@ -1,126 +1,171 @@
-# Pièce 2 — Memory : La Mémoire Persistante
-
-> **Concept** : Le système de mémoire permet à Claude de retenir des informations
-> entre les sessions : tes préférences, l'état du projet, les décisions prises.
-> Claude écrit et lit ces fichiers lui-même.
+# Pièce 2 — Memory : Se souvenir d'une session à l'autre
 
 ---
 
 ## Théorie
 
-### Le problème sans mémoire
+### Le problème
 
-Par défaut, Claude repart de zéro à chaque conversation. Il ne sait pas :
-- Que tu préfères les tests d'intégration aux tests unitaires
-- Que vous avez décidé de ne pas utiliser Redux la semaine dernière
-- Que le projet doit être livré vendredi
+Imagine que tu travailles avec un collègue très compétent. Mais chaque matin,
+il arrive au bureau **sans aucun souvenir de la veille**. Tu dois lui réexpliquer
+ton prénom, ton projet, tes préférences... à chaque fois.
 
-### La solution : le système de mémoire
+C'est exactement ce qui se passe avec Claude par défaut.
 
-Claude Code peut maintenir un système de fichiers de mémoire dans
-`.claude/memory/`. Ces fichiers sont en Markdown avec un frontmatter YAML
-qui aide Claude à décider quand les lire.
+Chaque fois que tu ouvres une nouvelle session, Claude repart de zéro.
+Il ne sait plus :
+- Comment tu t'appelles ou quel est ton niveau
+- Que tu préfères les commentaires en anglais
+- Sur quel projet tu travailles et où tu en es
 
-### Structure d'un fichier mémoire
+### La solution : un carnet de notes
 
-```markdown
----
-name: Préférences de test
-description: Comment l'utilisateur veut que les tests soient écrits
-type: user
----
-
-L'utilisateur préfère les tests d'intégration aux tests unitaires.
-Raison : "Les mocks nous ont coûté une prod l'année dernière."
-Toujours tester contre une vraie DB en dev.
-```
-
-### Les 4 types de mémoire
-
-| Type | Contenu | Durée de vie |
-|------|---------|--------------|
-| `user` | Profil, préférences, expertise | Longue durée |
-| `feedback` | Ce qui marche ou non avec Claude | Longue durée |
-| `project` | État, décisions, contexte projet | Moyen terme |
-| `reference` | Où trouver des infos externes | Longue durée |
-
-### Comment Claude utilise la mémoire
-
-1. **Lecture** : Claude lit les fichiers pertinents en début de session
-2. **Écriture** : Claude crée/met à jour les fichiers quand tu lui dis de retenir qqch
-3. **Index** : Un fichier `MEMORY.md` liste tous les fichiers mémoire
+Le système de mémoire, c'est simplement **un dossier de fichiers texte**
+que Claude peut lire et écrire lui-même.
 
 ```
 .claude/
 └── memory/
-    ├── MEMORY.md          ← Index (lu automatiquement)
-    ├── user_profile.md    ← Qui tu es
-    ├── project_state.md   ← État du projet
-    └── progress.md        ← Ta progression (déjà créé !)
+    ├── MEMORY.md         ← La liste de tout ce qu'il y a dans le carnet
+    ├── user_profile.md   ← Qui tu es
+    └── progress.md       ← Ta progression (déjà créé !)
 ```
+
+Au début d'une nouvelle session, Claude lit ces fichiers et se "souvient"
+de tout ce qui y est écrit.
+
+C'est aussi simple que ça : **si c'est écrit dans un fichier, Claude s'en souvient**.
+
+### Comment ça marche concrètement
+
+**Pour que Claude mémorise quelque chose**, dis-lui simplement :
+```
+Souviens-toi que je préfère les commentaires en anglais
+```
+
+Claude va créer ou mettre à jour un fichier dans `.claude/memory/` tout seul.
+
+**Pour que Claude retrouve une info**, dans une nouvelle session, demande :
+```
+Qu'est-ce que tu sais sur moi ?
+```
+
+Il va lire ses fichiers et te répondre avec ce qu'il a retenu.
+
+**Pour qu'il oublie quelque chose** :
+```
+Oublie ma préférence sur les commentaires
+```
+
+> **Pas besoin de redémarrer.** Contrairement aux commandes slash (Pièce 3),
+> la mémoire fonctionne immédiatement : Claude lit et écrit ses fichiers
+> à la demande, dans n'importe quelle session.
+
+### À quoi ressemble un fichier mémoire
+
+C'est juste un fichier texte avec une petite entête :
+
+```
+---
+name: Mon profil
+description: Qui je suis et mes préférences
+type: user
+---
+
+Je m'appelle Olivier. Je suis développeur intermédiaire.
+Je travaille avec React et Node.js.
+Je préfère les explications courtes et directes.
+```
+
+L'entête (entre les `---`) dit à Claude de quoi parle le fichier.
+Le texte en dessous, c'est ce qu'il doit retenir. Tu peux écrire ce que tu veux,
+en langage naturel — pas besoin de format particulier.
 
 ---
 
 ## Démo
 
-Regarde le fichier `.claude/memory/progress.md` — il a été créé automatiquement
-par ce projet pour suivre ta progression. C'est de la mémoire en action !
+Le fichier `.claude/memory/progress.md` existe déjà dans ce projet.
+C'est de la mémoire en action : Claude sait où tu en es dans le puzzle
+grâce à ce fichier.
 
+Regarde son contenu :
 ```bash
 cat .claude/memory/progress.md
 ```
 
-### Demander à Claude de mémoriser
-
-Dans une session Claude Code, tu peux dire :
-```
-"Souviens-toi que je préfère les fonctions fléchées aux déclarations de fonction"
-```
-
-Claude va alors créer ou mettre à jour un fichier dans `.claude/memory/`.
+Tu verras ta progression et les préférences que tu as partagées lors de la Pièce 1.
 
 ---
 
 ## Défi — Pièce 2 à débloquer
 
-**Objectif** : Créer un profil utilisateur et tester la persistance entre sessions.
+**Objectif** : Faire mémoriser ton profil à Claude et vérifier qu'il s'en souvient
+dans une nouvelle session.
 
 ### Étapes
 
-1. Crée le fichier `.claude/memory/MEMORY.md` (l'index) :
+1. Dans Claude Code, dis **exactement** ceci (préciser le nom du fichier est important,
+   sinon Claude peut écrire dans un fichier existant au lieu d'en créer un nouveau) :
+   ```
+   Crée un fichier .claude/memory/user_profile.md pour mémoriser mon profil :
+   [décris-toi en 2-3 phrases : niveau, technos, préférences]
+   ```
 
-```markdown
-# Index Mémoire — Claude Code Quest
+2. Vérifie que le **nouveau** fichier a bien été créé :
+   ```bash
+   cat .claude/memory/user_profile.md
+   ```
+   Si tu obtiens une erreur "no such file", c'est que Claude a écrit ailleurs.
+   Répète l'étape 1 en précisant bien le chemin du fichier.
 
-- [Progression](progress.md) — Suivi du parcours puzzle
-- [Profil utilisateur](user_profile.md) — Préférences et contexte
-```
+3. Crée ou mets à jour le fichier `.claude/memory/MEMORY.md`.
+   C'est la **table des matières** du carnet — il doit lister tous les fichiers
+   qui existent dans le dossier. Adapte-le à ce que tu vois réellement dans
+   `.claude/memory/` :
 
-2. Dans une session Claude Code, dis :
-   *"Mémorise que je suis développeur [ton niveau] et que je travaille principalement avec [tes technos]"*
+   ```bash
+   ls .claude/memory/
+   ```
 
-3. Vérifie que Claude a créé `.claude/memory/user_profile.md`
+   Voici un exemple de ce que `MEMORY.md` peut ressembler **après quelques sessions** :
 
-4. Ferme la session, rouvre-en une, et demande :
-   *"Qui suis-je d'après ta mémoire ?"*
+   ```markdown
+   # Ma mémoire — Claude Code Quest
 
-5. Claude doit répondre avec les infos mémorisées.
+   - [Progression](progress.md) — Suivi du parcours puzzle
+   - [Mon profil](user_profile.md) — Mes préférences et mon contexte
+   - [Préférences de code](code_preferences.md) — Style et conventions
+   - [Stack projet](project_stack.md) — Technos et décisions d'architecture
+   ```
 
-### Validation
+   > **À garder à jour :** chaque fois que Claude crée un nouveau fichier mémoire,
+   > ajoute une ligne dans `MEMORY.md`. C'est ce fichier que Claude lit en premier
+   > pour savoir quoi charger.
 
-Utilise `/validate` pour que Claude vérifie.
+4. Dans la **même session** ou dans une **nouvelle session**, demande :
+   ```
+   Qu'est-ce que tu sais sur moi ?
+   ```
+   Claude doit te répondre avec les infos que tu lui as données à l'étape 2.
 
-**Critères** :
-- [ ] Fichier `MEMORY.md` créé avec au moins 2 entrées
-- [ ] Fichier `user_profile.md` créé par Claude
-- [ ] Claude retrouve les infos dans une nouvelle session
+   > **Contrairement aux commandes**, la mémoire ne nécessite pas de redémarrage.
+   > Claude peut lire et écrire ses fichiers mémoire à tout moment, dans n'importe
+   > quelle session. Si tu ouvres une nouvelle session dans une semaine, il se souviendra
+   > quand même — tant que les fichiers sont là.
+
+### Auto-évaluation
+
+- [ ] Le fichier `MEMORY.md` existe dans `.claude/memory/`
+- [ ] Le fichier `user_profile.md` a été créé par Claude (pas par toi)
+- [ ] Dans une nouvelle session, Claude cite tes infos sans que tu les répètes
 
 ---
 
 ## Pour aller plus loin
 
-- Tu peux dire *"oublie"* pour demander à Claude de supprimer une mémoire
-- La mémoire peut référencer des fichiers du projet avec des chemins relatifs
-- Les mémoires `feedback` sont particulièrement puissantes pour affiner le comportement
+- Tu peux modifier les fichiers mémoire à la main, comme n'importe quel fichier texte
+- Plus les infos sont précises, plus Claude s'adapte bien
+- Cette mémoire ne quitte pas ton ordinateur — elle n'est pas envoyée à Anthropic
 
 **Prochaine pièce** : Skills — Crée tes propres commandes slash →

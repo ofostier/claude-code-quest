@@ -2,6 +2,7 @@ import { Routes, Route, useParams } from 'react-router-dom';
 import Header from './components/Header';
 import PuzzleBoard from './components/PuzzleBoard';
 import ChapterView from './components/ChapterView';
+import HallOfFame from './components/HallOfFame';
 import { useProgress } from './hooks/useProgress';
 import { getChapter } from './data/chapters';
 
@@ -32,6 +33,7 @@ function ChapterPage({ isUnlocked, isCompleted, completeChapter }) {
 
   return (
     <ChapterView
+      key={chapter.id}
       chapter={chapter}
       isCompleted={isCompleted(chapter.id)}
       onComplete={completeChapter}
@@ -69,6 +71,7 @@ export default function App() {
               />
             }
           />
+          <Route path="/hall-of-fame" element={<HallOfFame />} />
         </Routes>
       </main>
     </div>

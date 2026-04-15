@@ -84,9 +84,12 @@ cat CLAUDE.md
    - Ta langue préférée pour les commentaires (FR/EN)
    - Ton style de nommage préféré (camelCase/snake_case)
    - Une convention que tu veux que Claude respecte
-3. Teste en ouvrant une nouvelle session Claude Code et en demandant :
-   *"Résume tes instructions pour ce projet"*
-4. Vérifie que Claude mentionne tes préférences ajoutées
+3. Redémarre Claude Code (`exit` puis `claude`), puis tape exactement :
+   ```
+   Résume tes instructions pour ce projet
+   ```
+4. Claude doit citer tes préférences dans sa réponse (ex: *"tu préfères les commentaires en anglais"*).
+   S'il répond de façon générique sans les mentionner, relis l'étape 2.
 
 ### Validation
 

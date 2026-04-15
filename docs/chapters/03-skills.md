@@ -76,6 +76,10 @@ Essaie maintenant dans Claude Code :
 
 Tu verras Claude exécuter les instructions définies dans les fichiers `.md` correspondants.
 
+> **À retenir** : Claude Code charge les commandes de `.claude/commands/` **au démarrage**.
+> Si tu crées ou modifies un fichier de commande, tu dois **redémarrer Claude Code**
+> pour qu'il soit disponible. En terminal : `exit` puis `claude`.
+
 ---
 
 ## Défi — Pièce 3 à débloquer
@@ -120,7 +124,7 @@ Utilise `/validate` pour vérifier.
 **Critères** :
 - [ ] Fichier `.claude/commands/my-review.md` créé
 - [ ] Au moins une règle personnalisée ajoutée
-- [ ] Skill testé avec succès sur un fichier du projet
+- [ ] Taper `/my-review` dans Claude Code → Claude répond avec une liste de points ✅/⚠️/❌
 
 ---
 

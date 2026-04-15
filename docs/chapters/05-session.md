@@ -68,14 +68,31 @@ cat error.log | claude -p "Analyse ces erreurs et propose des corrections"
 claude -p "Vérifie que le code respecte nos conventions" --output-format json
 ```
 
-### Sessions parallèles avec sous-agents
+### Qu'est-ce qu'un sous-agent ?
 
-Claude peut lancer des sous-agents pour des tâches parallèles :
+Imagine que tu es manager et que tu as une grosse tâche à faire.
+Tu pourrais tout faire toi-même, une chose après l'autre. Ou tu pourrais
+**déléguer** : confier chaque partie à un membre de ton équipe, qui travaille
+de son côté pendant que toi tu fais autre chose.
+
+Un sous-agent, c'est exactement ça : **Claude qui se dédouble**.
+Quand tu lui demandes plusieurs tâches indépendantes, il peut lancer
+des copies de lui-même — chaque copie s'occupe d'une tâche, en même temps.
 
 ```
-"Lance deux agents en parallèle :
- - Agent 1 : Optimise les requêtes SQL dans src/db/
- - Agent 2 : Améliore les messages d'erreur dans src/api/"
+Toi → Claude (manager)
+         ├── Sous-agent 1 → "Optimise les requêtes SQL"
+         └── Sous-agent 2 → "Améliore les messages d'erreur"
+```
+
+Les deux travaillent en parallèle, puis Claude rassemble leurs résultats
+et te les présente. Tu gagnes du temps sur les tâches qui n'ont pas besoin
+de se faire dans un ordre précis.
+
+```
+"Fais ces deux choses en même temps :
+ - Optimise les requêtes SQL dans src/db/
+ - Améliore les messages d'erreur dans src/api/"
 ```
 
 ---

@@ -10,8 +10,36 @@
 
 ### Qu'est-ce qu'un Hook ?
 
-Un hook est une commande shell configurée dans `.claude/settings.json` qui
+Un hook est une commande shell configurée dans un fichier de settings qui
 se déclenche automatiquement en réponse à des événements Claude Code.
+
+### `settings.json` vs `settings.local.json`
+
+Claude Code utilise deux fichiers de configuration dans le dossier `.claude/` :
+
+```
+.claude/
+├── settings.json        ← partagé avec l'équipe (committer dans git)
+└── settings.local.json  ← personnel (ne jamais committer)
+```
+
+**Ce que chaque fichier supporte :**
+
+| Fonctionnalité | `settings.json` | `settings.local.json` |
+|----------------|-----------------|----------------------|
+| `hooks` | ✅ | ✅ |
+| `mcpServers` | ✅ | ❌ **ignoré** |
+| `permissions` | ✅ | ✅ |
+
+> ⚠️ **Attention** : `mcpServers` ne fonctionne **que** dans `settings.json`.
+> Si tu mets ta config MCP dans `settings.local.json`, les serveurs ne seront
+> pas chargés — sans aucun message d'erreur. C'est un piège classique.
+
+**La règle simple :**
+- Hook personnel (son, log...) → `settings.local.json`
+- Hook d'équipe (lint, format...) → `settings.json`
+- Serveurs MCP → toujours `settings.json`
+- Tokens et secrets → jamais dans un fichier commité (utilise des variables d'environnement système)
 
 ### Les événements disponibles
 
@@ -93,9 +121,9 @@ $CLAUDE_HOOK_EVENT         # Type d'événement
 
 ## Démo
 
-Regarde si un fichier `.claude/settings.json` existe déjà :
+Regarde les fichiers de settings qui existent déjà :
 ```bash
-cat .claude/settings.json 2>/dev/null || echo "Pas encore créé"
+ls .claude/settings*.json 2>/dev/null || echo "Aucun fichier settings encore"
 ```
 
 ---
@@ -106,7 +134,8 @@ cat .claude/settings.json 2>/dev/null || echo "Pas encore créé"
 
 ### Étapes
 
-1. Crée `.claude/settings.json` :
+1. Crée `.claude/settings.local.json` (on utilise la version locale car ce log
+   est personnel — pas besoin de le partager) :
 
 ```json
 {
@@ -146,7 +175,7 @@ Modifie le hook pour qu'il logge aussi le nom de l'outil utilisé avec `$CLAUDE_
 Utilise `/validate` pour vérifier.
 
 **Critères** :
-- [ ] Fichier `.claude/settings.json` créé avec au moins 1 hook
+- [ ] Fichier `.claude/settings.local.json` (ou `settings.json`) créé avec au moins 1 hook
 - [ ] Fichier `.claude/activity.log` contient au moins une entrée
 - [ ] Le hook se déclenche automatiquement (pas manuellement)
 

@@ -43,7 +43,7 @@ export const CHAPTERS = [
       validation: [
         'Section `## Mes préférences` présente dans CLAUDE.md',
         'Au moins 2 préférences personnelles ajoutées',
-        'Claude les mentionne lors d\'un test',
+        'Dans Claude Code, taper : "Résume tes instructions pour ce projet" → Claude cite tes préférences',
       ],
       hint: 'Claude lit le fichier mot pour mot. Sois explicite dans tes instructions — "toujours", "jamais", "préférer" sont des mots-clés puissants.',
     },
@@ -60,36 +60,53 @@ export const CHAPTERS = [
     glowColor: 'rgba(16, 185, 129, 0.4)',
     duration: '~20 min',
     theory: {
-      summary: 'Le système de mémoire permet à Claude de retenir tes préférences et l\'état du projet entre les sessions.',
+      summary: 'Par défaut, Claude repart de zéro à chaque session. La mémoire, c\'est juste un dossier de fichiers texte qu\'il lit au démarrage — si c\'est écrit, il s\'en souvient.',
       keyPoints: [
-        'Fichiers Markdown dans `.claude/memory/`',
-        'Frontmatter YAML : name, description, type',
-        '4 types : user, feedback, project, reference',
-        '`MEMORY.md` est l\'index lu automatiquement',
+        'Sans mémoire : Claude ne se souvient de rien d\'une session à l\'autre',
+        'Avec mémoire : tu lui dis "souviens-toi de X", il crée un fichier',
+        'Au prochain démarrage, il lit ce fichier et "se souvient"',
+        '`MEMORY.md` est la table des matières — liste ce qu\'il y a dans le dossier',
       ],
-      codeExample: `---
-name: Préférences de test
-description: Style de tests préféré
+      codeExamples: {
+        basic:
+`---
+name: Mon profil
+description: Qui je suis et mes préférences
 type: user
 ---
 
-Préfère les tests d'intégration aux mocks.
-Raison : "Les mocks ont causé un incident en prod."
-Toujours tester contre une vraie DB.`,
+Je m'appelle Olivier.
+Je préfère les explications courtes.
+Je travaille avec React et Node.js.`,
+        advanced:
+`---
+name: Préférences de test
+description: Comment écrire les tests dans ce projet
+type: feedback
+---
+
+Toujours écrire des tests d'intégration, pas de mocks.
+
+**Pourquoi :** les mocks ont masqué un bug de migration
+en production en mars 2024.
+
+**Comment appliquer :** utiliser une vraie DB PostgreSQL
+via Docker en dev. Voir docker-compose.yml.`,
+      },
     },
     challenge: {
       objective: 'Créer un profil utilisateur et tester la persistance entre sessions.',
       steps: [
-        'Crée `.claude/memory/MEMORY.md` (l\'index)',
-        'Dans Claude Code, dis : "Mémorise que je suis développeur [niveau] avec [technos]"',
-        'Vérifie que Claude a créé `user_profile.md`',
-        'Ferme et rouvre une session',
-        'Demande : "Qui suis-je d\'après ta mémoire ?"',
+        'Dans Claude Code, dis : "Crée un fichier .claude/memory/user_profile.md pour mémoriser mon profil : [décris-toi]" — préciser le nom évite que Claude écrive dans un fichier existant',
+        'Vérifie avec `cat .claude/memory/user_profile.md` que le fichier a bien été créé',
+        'Fais `ls .claude/memory/` pour voir tous les fichiers présents',
+        'Crée/mets à jour `MEMORY.md` pour qu\'il liste tous les fichiers du dossier',
+        'Dans la même session ou une nouvelle, demande : "Qu\'est-ce que tu sais sur moi ?"',
       ],
       validation: [
-        'Fichier `MEMORY.md` créé avec au moins 2 entrées',
+        'Fichier `MEMORY.md` créé et à jour (liste tous les fichiers du dossier)',
         'Fichier `user_profile.md` créé par Claude',
-        'Claude retrouve les infos dans une nouvelle session',
+        'Taper "Qu\'est-ce que tu sais sur moi ?" → Claude répond avec ton profil sans que tu aies rien expliqué',
       ],
       hint: 'Sois précis dans ce que tu demandes à Claude de mémoriser. "Mémorise que je préfère X" fonctionne mieux que "souviens-toi de X".',
     },
@@ -138,7 +155,7 @@ Résume ce qui est prêt et ce qui bloque.`,
       validation: [
         'Fichier `.claude/commands/my-review.md` créé',
         'Au moins une règle personnalisée dans le skill',
-        'Skill testé avec succès sur un fichier',
+        'Taper `/my-review` dans Claude Code → Claude répond avec une liste de points ✅/⚠️/❌',
       ],
       hint: 'Les meilleurs skills ont un format de sortie défini (ex: emojis ✅/⚠️/❌). Claude suivra exactement le format que tu spécifies.',
     },
@@ -157,10 +174,10 @@ Résume ce qui est prêt et ce qui bloque.`,
     theory: {
       summary: 'Les Hooks exécutent des commandes shell automatiquement avant/après les actions de Claude.',
       keyPoints: [
-        'Configurés dans `.claude/settings.json`',
+        '`hooks` fonctionne dans les deux fichiers — `mcpServers` uniquement dans `settings.json`',
+        'Hooks perso (sons, logs) → `settings.local.json` | Hooks équipe + MCP → `settings.json`',
         'Événements : PreToolUse, PostToolUse, Stop, Notification',
         'Variables : $CLAUDE_TOOL_NAME, $CLAUDE_TOOL_INPUT_*',
-        'PreToolUse peut bloquer une action (code de sortie non-zéro)',
       ],
       codeExample: `{
   "hooks": {
@@ -177,18 +194,34 @@ Résume ce qui est prêt et ce qui bloque.`,
     challenge: {
       objective: 'Configurer un hook qui logge automatiquement l\'activité de Claude.',
       steps: [
-        'Crée `.claude/settings.json` avec un hook `Stop`',
+        'Crée `.claude/settings.local.json` avec un hook `Stop` (local car c\'est un log personnel)',
         'Le hook doit logger l\'heure dans `.claude/activity.log`',
-        'Recharge Claude Code',
-        'Demande n\'importe quoi à Claude',
-        'Vérifie que `activity.log` contient une entrée',
+        'Redémarre Claude Code',
+        'Demande n\'importe quoi à Claude (ex: "Bonjour")',
+        'Vérifie avec `cat .claude/activity.log` → tu dois voir une ligne avec l\'heure',
       ],
       validation: [
-        'Fichier `.claude/settings.json` créé avec un hook',
-        'Fichier `.claude/activity.log` contient au moins une entrée',
-        'Le hook se déclenche automatiquement',
+        'Fichier `.claude/settings.local.json` ou `settings.json` créé avec un hook',
+        '`cat .claude/activity.log` affiche au moins une ligne horodatée',
+        'Le hook s\'est déclenché sans que tu aies rien fait manuellement',
       ],
       hint: 'Le hook `Stop` se déclenche après chaque réponse de Claude, peu importe ce qu\'il fait. C\'est le plus facile à tester.',
+      solution: `// Fichier : .claude/settings.local.json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \\"[$(date '+%H:%M:%S')] Claude a terminé\\" >> .claude/activity.log"
+          }
+        ]
+      }
+    ]
+  }
+}`,
     },
   },
   {
@@ -208,7 +241,7 @@ Résume ce qui est prêt et ce qui bloque.`,
         '`claude --continue` reprend la dernière session',
         '`claude --resume <id>` pour une session spécifique',
         '`claude -p "..."` pour le mode non-interactif / scripts',
-        'Les sous-agents permettent des tâches parallèles',
+        'Tu peux demander à Claude de lancer plusieurs tâches en même temps : "Optimise les requêtes SQL ET améliore les messages d\'erreur en parallèle"',
       ],
       codeExample: `# Reprendre une session
 claude --continue
@@ -247,39 +280,59 @@ cat error.log | claude -p "Analyse ces erreurs"`,
     glowColor: 'rgba(6, 182, 212, 0.4)',
     duration: '~30 min',
     theory: {
-      summary: 'Le Model Context Protocol connecte Claude à des services externes : bases de données, APIs, outils métier.',
+      summary: 'Sans MCP, Claude ne voit que tes fichiers. Avec MCP, il peut lire ta base de données, créer des issues GitHub, faire des recherches web... Chaque service se "branche" avec une commande.',
       keyPoints: [
-        'Configuré dans `.claude/settings.json` (clé `mcpServers`)',
-        'Serveurs stdio (local) ou SSE (distant)',
-        'Registre officiel : 50+ serveurs disponibles',
-        'Créer son propre serveur avec le SDK MCP',
+        '❌ Sans MCP : Claude travaille uniquement avec tes fichiers locaux',
+        '✅ Avec MCP : Claude accède à GitHub, PostgreSQL, Slack, le web...',
+        '`claude mcp add <nom> -- <commande>` — la méthode officielle qui fonctionne',
+        '`claude mcp list` pour voir les serveurs actifs · `claude mcp remove <nom>` pour supprimer',
       ],
-      codeExample: `{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_TOKEN": "ghp_..."
-      }
-    }
-  }
-}`,
+      codeExamples: {
+        basic:
+`# Filesystem — aucun token requis
+# Dans un terminal, depuis le projet :
+claude mcp add filesystem -- \\
+  npx -y @modelcontextprotocol/server-filesystem .
+
+# Vérifier :
+claude mcp list
+
+# Redémarre Claude, puis demande :
+# "Quels outils MCP as-tu disponibles ?"
+# → Claude liste read_file, list_directory...`,
+        advanced:
+`# GitHub — avec token d'accès
+claude mcp add github \\
+  --env GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxx -- \\
+  npx -y @modelcontextprotocol/server-github
+
+# Ou avec variable d'environnement système (plus sûr) :
+# Dans ~/.zshrc : export GITHUB_TOKEN="ghp_xxx"
+# Puis :
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+
+# Dans Claude après redémarrage :
+# "Y a-t-il des issues GitHub ouvertes ?"
+# "Crée une issue 'Test MCP'"`,
+      },
     },
     challenge: {
-      objective: 'Configurer et utiliser un serveur MCP.',
+      objective: 'Enregistrer un serveur MCP, prouver qu\'il est actif, et l\'utiliser pour explorer le projet.',
       steps: [
-        'Ajoute le serveur `filesystem` dans `.claude/settings.json`',
-        'Recharge Claude Code',
-        'Teste : "Liste les 5 fichiers modifiés le plus récemment"',
-        'Note le serveur utilisé dans ta mémoire projet',
+        'Dans un terminal, depuis le projet : `claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .`',
+        'Vérifie l\'enregistrement : `claude mcp list` → `filesystem` doit apparaître',
+        'Redémarre Claude Code (`exit` puis `claude`)',
+        'Dans Claude Code, demande : "Quels outils MCP as-tu disponibles dans cette session ?"',
+        'Teste le MCP : demande "Cherche tous les fichiers .jsx du projet et liste-les"',
+        'Teste encore : "Y a-t-il des console.log dans le code source ?"',
       ],
       validation: [
-        'Au moins un serveur MCP configuré',
-        'Claude a utilisé un outil MCP avec succès',
-        'Description dans `.claude/memory/progress.md`',
+        '`claude mcp list` affiche le serveur `filesystem`',
+        'Claude Code redémarré après l\'enregistrement',
+        '"Quels outils MCP as-tu ?" → Claude mentionne `read_file`, `list_directory`, `search_files`...',
+        'Claude a listé les fichiers .jsx via MCP (pas juste avec ses outils natifs)',
       ],
-      hint: 'Le serveur `filesystem` est le plus simple : pas besoin de token. Il donne juste à Claude un accès étendu aux fichiers.',
+      hint: 'La commande `claude mcp add` écrit dans `~/.claude.json`. C\'est la seule méthode fiable — éditer settings.json manuellement ne fonctionne pas avec le CLI actuel.',
     },
   },
   {

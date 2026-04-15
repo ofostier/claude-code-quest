@@ -1,13 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, BookOpen, Zap, CheckSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Zap, CheckSquare, Eye } from 'lucide-react';
 import { getNextChapter } from '../data/chapters';
+import DocPanel from './DocPanel';
 
 export default function ChapterView({ chapter, isCompleted, onComplete }) {
   const [tab, setTab] = useState('theory');
   const [checkedSteps, setCheckedSteps] = useState([]);
+  const [exampleTab, setExampleTab] = useState('basic');
+  const [showSolution, setShowSolution] = useState(false);
+  const [showDoc, setShowDoc] = useState(false);
   const navigate = useNavigate();
   const next = getNextChapter(chapter.id);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleStep = (idx) => {
     setCheckedSteps((prev) =>
@@ -116,22 +124,60 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
               Exemple
             </h3>
-            <div className="code-block p-4">
-              <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
-                {chapter.theory.codeExample}
-              </pre>
-            </div>
+            {chapter.theory.codeExamples ? (
+              <div>
+                <div className="flex gap-1 mb-2">
+                  {[
+                    { id: 'basic', label: '👶 Simple' },
+                    { id: 'advanced', label: '⚙️ Technique' },
+                  ].map(({ id, label }) => (
+                    <button
+                      key={id}
+                      onClick={() => setExampleTab(id)}
+                      className={[
+                        'px-3 py-1 rounded-md text-xs font-medium border transition-all',
+                        exampleTab === id
+                          ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
+                          : 'border-[var(--border)] text-[var(--text-secondary)] hover:text-white',
+                      ].join(' ')}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="code-block p-4">
+                  <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                    {chapter.theory.codeExamples[exampleTab]}
+                  </pre>
+                </div>
+              </div>
+            ) : (
+              <div className="code-block p-4">
+                <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                  {chapter.theory.codeExample}
+                </pre>
+              </div>
+            )}
           </div>
 
-          {/* Read more link */}
-          <div className="p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border)]">
-            <p className="text-xs text-[var(--text-secondary)]">
-              📖 Documentation complète :{' '}
-              <span className="font-mono text-purple-400">
+          {/* Doc link */}
+          <button
+            onClick={() => setShowDoc(true)}
+            className="w-full flex items-center gap-3 p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border)] hover:border-purple-500/40 transition-colors group"
+          >
+            <BookOpen size={16} className="text-purple-400 shrink-0" />
+            <div className="text-left">
+              <p className="text-xs font-medium text-white group-hover:text-purple-300 transition-colors">
+                Documentation complète
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] font-mono">
                 docs/chapters/0{chapter.id}-{chapter.slug}.md
-              </span>
-            </p>
-          </div>
+              </p>
+            </div>
+            <span className="ml-auto text-xs text-[var(--text-secondary)] group-hover:text-purple-400 transition-colors">
+              Ouvrir →
+            </span>
+          </button>
 
           <button
             onClick={() => setTab('challenge')}
@@ -190,6 +236,59 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
               </div>
             </div>
           </div>
+
+          {/* Doc link */}
+          <button
+            onClick={() => setShowDoc(true)}
+            className="w-full flex items-center gap-3 p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border)] hover:border-purple-500/40 transition-colors group"
+          >
+            <BookOpen size={16} className="text-purple-400 shrink-0" />
+            <div className="text-left">
+              <p className="text-xs font-medium text-white group-hover:text-purple-300 transition-colors">
+                Documentation complète
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] font-mono">
+                docs/chapters/0{chapter.id}-{chapter.slug}.md
+              </p>
+            </div>
+            <span className="ml-auto text-xs text-[var(--text-secondary)] group-hover:text-purple-400 transition-colors">
+              Ouvrir →
+            </span>
+          </button>
+
+          {/* Solution */}
+          {chapter.challenge.solution && (
+            <div>
+              {!showSolution ? (
+                <button
+                  onClick={() => setShowSolution(true)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-[var(--border)] text-sm text-[var(--text-secondary)] hover:text-white hover:border-purple-500/40 transition-all"
+                >
+                  <Eye size={14} />
+                  Voir la réponse
+                </button>
+              ) : (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-amber-500/20">
+                    <span className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+                      <Eye size={12} /> Solution
+                    </span>
+                    <button
+                      onClick={() => setShowSolution(false)}
+                      className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors"
+                    >
+                      masquer
+                    </button>
+                  </div>
+                  <div className="p-4 code-block rounded-none border-0">
+                    <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                      {chapter.challenge.solution}
+                    </pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Validation checklist */}
           <div>
@@ -260,6 +359,11 @@ export default function ChapterView({ chapter, isCompleted, onComplete }) {
             pour une validation assistée par l'IA
           </p>
         </div>
+      )}
+
+      {/* Doc panel */}
+      {showDoc && (
+        <DocPanel chapter={chapter} onClose={() => setShowDoc(false)} />
       )}
     </div>
   );

@@ -1,148 +1,299 @@
 # Pièce 6 — MCP : Étendre les Capacités
 
-> **Concept** : Le Model Context Protocol (MCP) est un standard ouvert qui permet
-> à Claude de se connecter à des services externes — bases de données, APIs, outils
-> métier — via des serveurs standardisés. C'est l'écosystème d'extensions de Claude.
+> **Concept** : Le Model Context Protocol (MCP) permet à Claude de se connecter
+> à des services externes. Sans MCP, Claude ne peut travailler qu'avec les fichiers
+> de ton ordinateur. Avec MCP, il peut lire ta base de données, créer des issues
+> GitHub, envoyer des messages Slack, contrôler un navigateur...
 
 ---
 
 ## Théorie
 
-### Qu'est-ce que MCP ?
+### Le problème sans MCP
 
-MCP est un protocole qui définit comment un LLM communique avec des "serveurs"
-qui exposent des outils. Un serveur MCP peut :
-- Exposer des **tools** (fonctions que Claude peut appeler)
-- Exposer des **ressources** (données que Claude peut lire)
-- Exposer des **prompts** (templates réutilisables)
+Par défaut, Claude travaille uniquement avec ce qu'il peut lire sur ton disque.
+Il ne peut pas :
+- Voir tes issues GitHub sans que tu les copie-colles
+- Interroger ta base de données directement
+- Envoyer un message sur Slack
+- Faire une recherche sur le web
 
-### Architecture MCP
+### La solution : brancher des services
 
-```
-Claude Code ←→ MCP Client ←→ MCP Server ←→ Service externe
-                                 ↓
-                         (GitHub, PostgreSQL,
-                          Slack, Jira, etc.)
-```
-
-### Configurer un serveur MCP
-
-Dans `~/.claude/settings.json` (global) ou `.claude/settings.json` (projet) :
-
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_TOKEN": "ton-token-ici"
-      }
-    },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]
-    }
-  }
-}
-```
-
-### Serveurs MCP populaires
-
-| Serveur | Usage |
-|---------|-------|
-| `@mcp/server-github` | Issues, PRs, commits GitHub |
-| `@mcp/server-postgres` | Requêtes SQL directes |
-| `@mcp/server-filesystem` | Accès fichiers étendu |
-| `@mcp/server-slack` | Messages, canaux Slack |
-| `@mcp/server-puppeteer` | Contrôle de navigateur |
-| `@mcp/server-memory` | Mémoire persistante externe |
-
-### Utilisation dans Claude
-
-Une fois configuré, Claude accède aux outils du serveur naturellement :
+MCP (Model Context Protocol) est un système de "prises électriques" standardisées.
+Chaque service (GitHub, PostgreSQL, Slack...) fournit une prise MCP — un petit
+programme appelé **serveur MCP**. Tu enregistres ce serveur avec une commande,
+et Claude peut alors utiliser ce service directement dans la conversation.
 
 ```
-"Regarde les issues GitHub ouvertes avec le label 'bug' 
- et propose un plan de résolution"
+Sans MCP :   Claude ←→ tes fichiers uniquement
+
+Avec MCP :   Claude ←→ tes fichiers
+                    ←→ GitHub (issues, PRs, commits)
+                    ←→ ta base de données
+                    ←→ Slack
+                    ←→ ...
+```
+
+### Compatibilité macOS / Linux / Windows
+
+| | macOS | Linux | Windows |
+|---|---|---|---|
+| **Claude Code CLI** | ✅ Terminal / VSCode | ✅ Terminal | ✅ WSL recommandé |
+| **`claude mcp add`** | ✅ identique | ✅ identique | ✅ dans WSL |
+| **`~/.claude.json`** | `/Users/<toi>/.claude.json` | `/home/<toi>/.claude.json` | `C:\Users\<toi>\.claude.json` |
+| **Variables d'env** | `~/.zshrc` | `~/.bashrc` | Paramètres système ou `$PROFILE` PowerShell |
+| **`npx`** | ✅ avec Node.js | ✅ avec Node.js | ✅ avec Node.js |
+
+> 💡 **Windows** : Claude Code fonctionne nativement, mais les commandes shell
+> des exemples supposent un environnement Unix. Sous Windows, utilise **WSL**
+> (Windows Subsystem for Linux) pour une expérience identique à macOS/Linux.
+
+---
+
+### Comment enregistrer un serveur MCP
+
+#### La commande officielle
+
+```bash
+claude mcp add <nom> -- <commande> <args>
+```
+
+Claude Code écrit la config dans `~/.claude.json` sous ton profil de projet.
+C'est l'**unique méthode fiable** — éditer `settings.json` manuellement ne fonctionne pas.
+
+#### Portée : projet ou global ?
+
+Par défaut, `claude mcp add` enregistre le serveur pour le **projet courant** uniquement.
+
+```bash
+# Projet courant uniquement (défaut)
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .
+
+# Disponible dans tous tes projets
+claude mcp add --scope global filesystem -- npx -y @modelcontextprotocol/server-filesystem .
+```
+
+#### Vérifier les serveurs enregistrés
+
+```bash
+claude mcp list
+```
+
+Cette commande liste tous les serveurs actifs pour le projet courant.
+
+#### Supprimer un serveur
+
+```bash
+claude mcp remove filesystem
+```
+
+#### Redémarrer après ajout
+
+Claude Code charge les serveurs MCP **au démarrage uniquement**.
+Après `claude mcp add` : `exit` puis `claude` pour recharger.
+
+#### Vérifier dans une session
+
+Après redémarrage, demande directement dans Claude Code :
+```
+Quels outils MCP as-tu disponibles dans cette session ?
+```
+Claude liste tous les outils des serveurs actifs.
+
+---
+
+### Gérer les tokens
+
+Les serveurs comme GitHub nécessitent un token d'accès. Deux approches :
+
+**Option 1 — Passer le token via `--env`** (stocké dans `~/.claude.json`) :
+```bash
+claude mcp add github --env GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxx -- \
+  npx -y @modelcontextprotocol/server-github
+```
+
+**Option 2 — Variable d'environnement système** (recommandé — le token reste hors de `~/.claude.json`) :
+```bash
+# Dans ~/.zshrc :
+export GITHUB_TOKEN="ghp_ton_token_ici"
+
+# Puis :
+source ~/.zshrc
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+```
+
+> ⚠️ **Ne jamais commiter un token.** `~/.claude.json` n'est pas suivi par git,
+> mais si tu partages ta machine ou sauvegardes ce fichier, le token est exposé.
+> La variable d'environnement système est la méthode la plus sûre.
+
+---
+
+### Exemples concrets
+
+#### 1. Filesystem — accès fichiers étendu
+*Sans token, le plus simple à tester.*
+
+```bash
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .
+```
+
+Ce que tu peux faire ensuite :
+```
+"Liste les 5 fichiers modifiés le plus récemment"
+"Cherche tous les fichiers qui contiennent le mot TODO"
+"Montre-moi l'arborescence complète de src/"
+```
+
+---
+
+#### 2. GitHub — issues, PRs, commits
+*Nécessite un token GitHub (gratuit).*
+
+```bash
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+# Puis dans la session : définir GITHUB_PERSONAL_ACCESS_TOKEN
+```
+
+Créer le token : GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → coche `repo`.
+
+Ce que tu peux faire ensuite :
+```
+"Montre-moi les issues ouvertes avec le label 'bug'"
+"Crée une issue 'Améliorer le formulaire de contact'"
+"Résume les 5 derniers commits de la branche main"
+```
+
+---
+
+#### 3. PostgreSQL — base de données
+```bash
+claude mcp add postgres -- npx -y @modelcontextprotocol/server-postgres \
+  postgresql://user:password@localhost/mabase
+```
+
+---
+
+#### 4. Brave Search — recherche web
+```bash
+claude mcp add brave-search --env BRAVE_API_KEY=BSA_xxx -- \
+  npx -y @modelcontextprotocol/server-brave-search
+```
+
+---
+
+#### 5. Puppeteer — contrôle de navigateur
+```bash
+claude mcp add puppeteer -- npx -y @modelcontextprotocol/server-puppeteer
 ```
 
 ```
-"Connecte-toi à la base de données et montre-moi le schéma 
- de la table users"
+"Va sur http://localhost:5173 et fais une capture d'écran"
+"Teste le formulaire de contact et dis-moi s'il fonctionne"
 ```
 
-### Créer son propre serveur MCP
+---
 
-```typescript
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+### Tableau récapitulatif
 
-const server = new Server({ name: "mon-serveur", version: "1.0.0" });
+| Serveur | Token requis ? | Commande `claude mcp add` |
+|---------|---------------|--------------------------|
+| `server-filesystem` | ❌ Non | `claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .` |
+| `server-github` | ✅ `GITHUB_PERSONAL_ACCESS_TOKEN` | `claude mcp add github -- npx -y @modelcontextprotocol/server-github` |
+| `server-postgres` | ✅ Connection string | `claude mcp add postgres -- npx -y @modelcontextprotocol/server-postgres <url>` |
+| `server-brave-search` | ✅ `BRAVE_API_KEY` | `claude mcp add brave-search -- npx -y @modelcontextprotocol/server-brave-search` |
+| `server-puppeteer` | ❌ Non | `claude mcp add puppeteer -- npx -y @modelcontextprotocol/server-puppeteer` |
 
-server.setRequestHandler("tools/list", async () => ({
-  tools: [{
-    name: "get_meteo",
-    description: "Obtient la météo d'une ville",
-    inputSchema: {
-      type: "object",
-      properties: { ville: { type: "string" } }
-    }
-  }]
-}));
-
-server.setRequestHandler("tools/call", async (req) => {
-  if (req.params.name === "get_meteo") {
-    const { ville } = req.params.arguments;
-    // ... appel API météo
-    return { content: [{ type: "text", text: `Météo à ${ville}: ☀️ 22°C` }] };
-  }
-});
-```
+> Ces packages npm sont archivés mais fonctionnels. Pour des alternatives maintenues,
+> voir le [registre officiel](https://github.com/modelcontextprotocol/servers).
 
 ---
 
 ## Défi — Pièce 6 à débloquer
 
-**Objectif** : Configurer et utiliser un serveur MCP.
+**Objectif** : Enregistrer un serveur MCP et prouver qu'il est actif dans une session.
 
-### Option A — Serveur filesystem (facile)
+### ⚠️ Important : Claude Code CLI uniquement
 
-1. Ajoute dans `.claude/settings.json` :
-```json
-{
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
-    }
-  }
-}
+La commande `claude mcp add` fonctionne dans le **Claude Code CLI** (terminal).
+Elle ne s'applique pas à l'extension VSCode ni à claude.ai.
+
+Pour tester MCP, ouvre un terminal et lance `claude` depuis le projet.
+
+---
+
+### Option A — Filesystem (le plus simple)
+
+Aucun compte ni token nécessaire.
+
+1. Dans un terminal, depuis le projet :
+```bash
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem .
 ```
 
-2. Recharge Claude Code et teste :
-   *"Liste les 5 fichiers modifiés le plus récemment dans ce projet"*
+2. Vérifie l'enregistrement :
+```bash
+claude mcp list
+```
+Tu dois voir `filesystem` dans la liste.
 
-### Option B — Serveur GitHub (intermédiaire)
+3. Redémarre Claude Code (`exit` puis `claude`)
 
-1. Crée un token GitHub (Settings > Developer settings > Tokens)
-2. Configure le serveur `@modelcontextprotocol/server-github`
-3. Teste : *"Crée une issue GitHub 'Premier commit' dans ce repo"*
+4. Dans Claude Code, demande :
+```
+Quels outils MCP as-tu disponibles dans cette session ?
+```
+Claude doit mentionner des outils comme `read_file`, `list_directory`, `search_files`.
 
-### Validation
+5. **Teste vraiment le MCP** — demande quelque chose qui prouve qu'il s'en sert :
+```
+Cherche tous les fichiers .jsx du projet et liste-les
+```
+```
+Y a-t-il des console.log dans le code source ?
+```
+Claude utilisera `search_files` du serveur MCP — tu verras les appels d'outils `mcp__filesystem__*` dans sa réponse.
 
-Utilise `/validate` pour vérifier.
+---
 
-**Critères** :
-- [ ] Au moins un serveur MCP configuré dans settings.json
-- [ ] Claude a utilisé un outil MCP avec succès
-- [ ] Description du serveur ajoutée dans `.claude/memory/progress.md`
+### Option B — GitHub (démontre vraiment la puissance de MCP)
+
+GitHub est un meilleur exemple car Claude **ne peut pas** accéder à GitHub sans MCP.
+La différence est immédiate et indiscutable.
+
+1. Génère un token : GitHub → Settings → Developer settings →
+   Personal access tokens → Generate new token (classic) → coche `repo`
+
+2. Ajoute le serveur avec le token :
+```bash
+claude mcp add github --env GITHUB_PERSONAL_ACCESS_TOKEN=ghp_ton_token -- \
+  npx -y @modelcontextprotocol/server-github
+```
+
+3. Redémarre Claude Code, puis teste :
+```
+Crée une issue GitHub intitulée "Test MCP - Pièce 6 complétée"
+dans le repo claude-code-quest
+```
+Si l'issue apparaît sur GitHub → MCP fonctionne.
+
+---
+
+### Critères de validation
+
+- [ ] `claude mcp add` exécuté avec succès
+- [ ] `claude mcp list` affiche le serveur
+- [ ] Claude Code redémarré après l'enregistrement
+- [ ] "Quels outils MCP as-tu ?" → Claude mentionne les outils du serveur
+- [ ] Claude a utilisé `mcp__filesystem__search_files` pour lister les fichiers .jsx
 
 ---
 
 ## Pour aller plus loin
 
-- [Registre officiel MCP](https://github.com/modelcontextprotocol/servers)
-- Les serveurs MCP peuvent être locaux (stdio) ou distants (SSE/HTTP)
-- Claude Code Cowork permet de partager des MCP entre équipes
+- [Registre officiel : 50+ serveurs disponibles](https://github.com/modelcontextprotocol/servers)
+- Tu peux activer plusieurs serveurs en même temps
+- `claude mcp remove <nom>` pour désactiver un serveur
+- `claude mcp get <nom>` pour voir la config d'un serveur
 
 **Dernière pièce** : Master Build — Assemble tout ! →
